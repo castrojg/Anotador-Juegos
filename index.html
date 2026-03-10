@@ -4,1378 +4,920 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Javi's Game Suite – Anotador de Juegos de Mesa</title>
-<meta name="description" content="Anotador gratuito online para Generala, Truco, Escoba de 15 y Loba. Llevá el puntaje de tus juegos de mesa favoritos desde el celular.">
+<meta name="description" content="Anotador gratuito online para Generala, Truco, Escoba de 15 y Loba. Lleva el puntaje de tus juegos de mesa favoritos desde el celular.">
 <meta name="keywords" content="generala, truco, escoba de 15, loba, anotador, puntaje, juegos de mesa, argentina">
 <meta name="author" content="Javi's Game Suite">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="Javi's Game Suite – Anotador de Juegos de Mesa">
 <meta property="og:description" content="Anotador gratuito para Generala, Truco, Escoba de 15 y Loba.">
 <meta property="og:type" content="website">
-<!-- Google AdSense: reemplazá YOUR_PUBLISHER_ID con tu ID real cuando lo tengas -->
+<!-- Google AdSense: reemplaza YOUR_PUBLISHER_ID con tu ID real cuando lo tengas -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUBLISHER_ID" crossorigin="anonymous"></script> -->
-<title>Javi's Game Suite</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f0f1a;
-    --surface: #1a1a2e;
-    --card: #16213e;
-    --border: #0f3460;
-    --accent: #e94560;
-    --gold: #f5a623;
-    --green: #00d4aa;
-    --blue: #4a9eff;
-    --text: #e8e8f0;
-    --muted: #8888aa;
-    --radius: 14px;
+    --bg: #0f0f1a; --surface: #1a1a2e; --card: #16213e; --border: #0f3460;
+    --accent: #e94560; --gold: #f5a623; --green: #00d4aa; --blue: #4a9eff;
+    --text: #e8e8f0; --muted: #8888aa; --radius: 14px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; background-image: radial-gradient(ellipse at top, #1a1a3e 0%, #0f0f1a 70%); }
 
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-    background-image: radial-gradient(ellipse at top, #1a1a3e 0%, #0f0f1a 70%);
-  }
-
-  /* ── SCREENS ── */
   .screen { display: none; width: 100%; max-width: 520px; flex-direction: column; gap: 14px; }
   .screen.active { display: flex; }
 
-  /* ── HOME ── */
-  .suite-title {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 3rem;
-    letter-spacing: 4px;
-    text-align: center;
-    color: var(--accent);
-    text-shadow: 0 0 30px rgba(233,69,96,0.5);
-    margin-bottom: 4px;
-  }
+  .suite-title { font-family: 'Bebas Neue', cursive; font-size: 3rem; letter-spacing: 4px; text-align: center; color: var(--accent); text-shadow: 0 0 30px rgba(233,69,96,0.5); margin-bottom: 4px; }
   .suite-sub { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
-
   .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .game-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  .game-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-  }
-  .game-card:active { transform: scale(0.96); border-color: var(--accent); box-shadow: 0 0 20px rgba(233,69,96,0.3); }
+  .game-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 14px; text-align: center; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+  .game-card:active { transform: scale(0.96); border-color: var(--accent); }
   .game-card .emoji { font-size: 2.6rem; display: block; margin-bottom: 10px; }
   .game-card .game-name { font-weight: 800; font-size: 1rem; }
   .game-card .game-desc { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
 
-  /* ── SCREEN HEADER ── */
-  .screen-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-  }
-  .back-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .screen-title {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1.8rem;
-    letter-spacing: 2px;
-    color: var(--accent);
-  }
+  .screen-header { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+  .back-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 38px; height: 38px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .screen-title { font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: 2px; color: var(--accent); }
 
-  /* ── BUTTONS ── */
-  .btn {
-    padding: 13px 16px;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 800;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.1s;
-    width: 100%;
-  }
-  .btn:active { transform: scale(0.97); opacity: 0.85; }
-  .btn-accent { background: var(--accent); color: white; }
+  .btn { padding: 13px 16px; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: transform 0.1s; width: 100%; }
+  .btn:active { transform: scale(0.97); }
   .btn-gold { background: var(--gold); color: #1a1100; }
   .btn-green { background: var(--green); color: #001a14; }
   .btn-blue { background: var(--blue); color: white; }
+  .btn-accent { background: var(--accent); color: white; }
   .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  .btn-danger { background: #c0392b; color: white; }
   .btn-row { display: flex; gap: 8px; }
   .btn-row .btn { flex: 1; }
 
-  /* ── PLAYER SETUP ── */
   .player-setup { background: var(--surface); border-radius: var(--radius); padding: 14px; border: 1px solid var(--border); }
   .player-setup h3 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
   .player-inputs { display: flex; flex-direction: column; gap: 8px; }
   .player-input-row { display: flex; align-items: center; gap: 8px; }
   .player-input-row span { font-size: 1.2rem; width: 28px; text-align: center; }
-  .player-input-row input {
-    flex: 1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-  }
+  .player-input-row input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; outline: none; }
   .player-input-row input:focus { border-color: var(--accent); }
-  .num-players-ctrl { display: flex; gap: 8px; margin-bottom: 10px; }
-  .np-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
+  .num-players-ctrl { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .np-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
   .np-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-  /* ── SCORE TABLE ── */
   .table-wrap { overflow-x: auto; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); }
   table { border-collapse: collapse; width: 100%; }
-  th {
-    background: var(--card);
-    padding: 10px 8px;
-    font-size: 0.78rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  td {
-    padding: 6px 4px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  .row-label {
-    text-align: left;
-    padding-left: 12px;
-    font-weight: 700;
-    font-size: 0.82rem;
-    color: var(--text);
-    white-space: nowrap;
-    min-width: 90px;
-  }
-  .score-input {
-    width: 52px;
-    background: var(--card);
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 6px 2px;
-    outline: none;
-    -moz-appearance: textfield;
-    transition: border-color 0.15s;
-  }
-  .score-input::-webkit-inner-spin-button,
-  .score-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  th { background: var(--card); padding: 10px 8px; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: center; font-size: 0.9rem; }
+  .row-label { text-align: left; padding-left: 12px; font-weight: 700; font-size: 0.82rem; color: var(--text); white-space: nowrap; min-width: 90px; }
+  .score-input { width: 52px; background: var(--card); border: 1px solid transparent; border-radius: 6px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; text-align: center; padding: 6px 2px; outline: none; -moz-appearance: textfield; }
+  .score-input::-webkit-inner-spin-button, .score-input::-webkit-outer-spin-button { -webkit-appearance: none; }
   .score-input:focus { border-color: var(--accent); background: var(--surface); }
   .total-row td { background: rgba(249,165,35,0.12); color: var(--gold); font-weight: 800; font-size: 0.95rem; }
-  .divider-row td { background: rgba(233,69,96,0.08); }
 
-  /* ── RULES BOX ── */
-  .rules-box {
-    display: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    font-size: 0.83rem;
-    line-height: 1.6;
-    color: var(--muted);
-    border-left: 3px solid var(--blue);
-  }
+  .rules-box { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; font-size: 0.83rem; line-height: 1.6; color: var(--muted); border-left: 3px solid var(--blue); }
   .rules-box.open { display: block; }
   .rules-box h4 { color: var(--blue); margin-bottom: 8px; font-size: 0.9rem; }
   .rules-box ul { padding-left: 16px; }
   .rules-box li { margin-bottom: 4px; }
 
-  /* ── TRUCO ── */
   .truco-grid { display: flex; gap: 10px; }
-  .truco-team {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .team-name-input {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    text-align: center;
-    outline: none;
-    width: 100%;
-  }
-  .team-score-display {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 3.5rem;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .palitos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  .palito-set {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px dashed rgba(255,255,255,0.1);
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    background: var(--card);
-    transition: background 0.1s;
-  }
-  .palito-set:active { background: rgba(233,69,96,0.15); }
-  /* Lines for the box drawing */
-  .pal { position: absolute; background: var(--accent); opacity: 0; transition: opacity 0.15s; }
-  .pal.on { opacity: 1; }
-  .pal-l { left: 4px; top: 4px; width: 2px; bottom: 4px; }
-  .pal-t { left: 4px; top: 4px; height: 2px; right: 4px; }
-  .pal-r { right: 4px; top: 4px; width: 2px; bottom: 4px; }
-  .pal-b { left: 4px; bottom: 4px; height: 2px; right: 4px; }
-  .pal-d {
-    left: 50%; top: 50%;
-    width: 130%; height: 2px;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    transform-origin: center;
-  }
-  .team-pts { font-size: 0.75rem; color: var(--muted); }
+  .truco-team { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+  .team-score-display { font-family: 'Bebas Neue', cursive; font-size: 3.5rem; color: var(--accent); line-height: 1; }
+  .team-pts { font-size: 0.68rem; color: var(--muted); line-height: 1.4; }
   .truco-btns { display: flex; gap: 6px; }
   .truco-btns .btn { padding: 10px; font-size: 0.8rem; }
-
-  /* ── WINNER MODAL ── */
-  .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    z-index: 200;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-    gap: 16px;
-  }
-  .modal.open { display: flex; }
-  .modal .trophy { font-size: 5rem; animation: bounce 0.5s ease infinite alternate; }
-  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-  .modal .winner-label { font-size: 0.9rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
-  .modal .winner-name { font-family: 'Bebas Neue', cursive; font-size: 3.5rem; color: var(--gold); letter-spacing: 3px; }
-  .modal .winner-score { color: var(--muted); font-size: 0.9rem; }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 30px;
-    padding: 10px 22px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text);
-    z-index: 300;
-    transition: transform 0.3s;
-    white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ── TRUCO MALAS/BUENAS ── */
-  .truco-half-label {
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    margin-bottom: 4px;
-    display: inline-block;
-  }
-  .label-malas { background: rgba(233,69,96,0.18); color: var(--accent); }
-  .label-buenas { background: rgba(0,212,170,0.18); color: var(--green); }
   .truco-halves { display: flex; flex-direction: column; gap: 6px; width: 100%; }
   .truco-half { border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; }
   .truco-half:first-child { border-top: none; padding-top: 0; }
-  .palitos-grid-malas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-  .palito-set-sm {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px dashed rgba(255,255,255,0.1);
-    border-radius: 3px;
-    position: relative;
-    background: var(--card);
-  }
-  .palito-set-sm.active-half { border-color: rgba(233,69,96,0.3); }
-  .palito-set-sm.buenas-half { border-color: rgba(0,212,170,0.2); }
+  .truco-half-label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 2px 7px; border-radius: 20px; margin-bottom: 4px; display: inline-block; }
+  .label-malas { background: rgba(233,69,96,0.18); color: var(--accent); }
+  .label-buenas { background: rgba(0,212,170,0.18); color: var(--green); }
+  .palitos-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+  .palito-box { width: 100%; aspect-ratio: 1; border: 1px dashed rgba(255,255,255,0.1); border-radius: 3px; position: relative; background: var(--card); }
+  .palito-box.malas-box { border-color: rgba(233,69,96,0.25); }
+  .palito-box.buenas-box { border-color: rgba(0,212,170,0.2); }
+  .pal { position: absolute; background: var(--accent); opacity: 0; }
+  .pal.on { opacity: 1; }
+  .pal-l { left: 3px; top: 3px; width: 2px; bottom: 3px; }
+  .pal-t { left: 3px; top: 3px; height: 2px; right: 3px; }
+  .pal-r { right: 3px; top: 3px; width: 2px; bottom: 3px; }
+  .pal-b { left: 3px; bottom: 3px; height: 2px; right: 3px; }
+  .pal-d { left: 50%; top: 50%; width: 130%; height: 2px; transform: translate(-50%,-50%) rotate(-45deg); }
 
-  /* ── GENERALA specific ── */
-  .generala-row-bonus td:first-child { color: var(--gold); }
-  .generala-row-special td:first-child { color: var(--green); }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 200; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; gap: 16px; }
+  .modal.open { display: flex; }
+  .trophy { font-size: 5rem; animation: bounce 0.5s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+  .winner-label { font-size: 0.9rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+  .winner-name { font-family: 'Bebas Neue', cursive; font-size: 3.5rem; color: var(--gold); letter-spacing: 3px; }
+  .winner-score { color: var(--muted); font-size: 0.9rem; }
 
-  /* ── AD SLOTS ── */
-  .ad-slot {
-    width: 100%;
-    background: var(--surface);
-    border: 1px dashed rgba(255,255,255,0.08);
-    border-radius: var(--radius);
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 0.72rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 10px 22px; font-size: 0.85rem; font-weight: 700; color: var(--text); z-index: 300; transition: transform 0.3s; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* ── FOOTER ── */
-  .site-footer {
-    width: 100%;
-    max-width: 520px;
-    margin-top: 20px;
-    padding: 16px 0 30px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
+  .ad-slot { width: 100%; background: var(--surface); border: 1px dashed rgba(255,255,255,0.08); border-radius: var(--radius); min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; }
+
+  .site-footer { width: 100%; max-width: 520px; margin-top: 20px; padding: 16px 0 90px; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .footer-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-  .footer-links a {
-    color: var(--muted);
-    font-size: 0.78rem;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .footer-links a:hover { color: var(--text); }
+  .footer-links a { color: var(--muted); font-size: 0.78rem; text-decoration: none; cursor: pointer; }
   .footer-copy { font-size: 0.72rem; color: var(--muted); text-align: center; }
 
-  /* ── COOKIE BANNER ── */
-  .cookie-banner {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    z-index: 500;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
+  .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 500; font-size: 0.8rem; color: var(--muted); }
   .cookie-banner.hidden { display: none; }
   .cookie-banner p { flex: 1; line-height: 1.5; }
   .cookie-banner p a { color: var(--blue); cursor: pointer; }
-  .cookie-accept {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 9px 18px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.82rem;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+  .cookie-accept { background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 800; font-size: 0.82rem; cursor: pointer; white-space: nowrap; }
 
-  /* ── LEGAL SCREENS ── */
-  .legal-content {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-    font-size: 0.83rem;
-    line-height: 1.75;
-    color: var(--muted);
-  }
+  .legal-content { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; font-size: 0.83rem; line-height: 1.75; color: var(--muted); }
   .legal-content h2 { color: var(--text); font-size: 1rem; margin: 16px 0 6px; }
   .legal-content h2:first-child { margin-top: 0; }
   .legal-content p { margin-bottom: 10px; }
   .legal-content ul { padding-left: 18px; margin-bottom: 10px; }
   .legal-content li { margin-bottom: 4px; }
-
-  /* ── ESCOBA ── */
-  .escoba-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--muted);
-  }
-  .stat-card .stat-val { font-family: 'Bebas Neue', cursive; font-size: 1.8rem; color: var(--green); display: block; }
+  .legal-content a { color: var(--blue); }
 </style>
 </head>
 <body>
 
-<!-- ════════ HOME SCREEN ════════ -->
+<!-- HOME -->
 <div id="home" class="screen active">
-  <div class="suite-title">🎮 GAME SUITE</div>
-  <div class="suite-sub">Seleccioná un juego para comenzar</div>
+  <div class="suite-title">GAME SUITE</div>
+  <div class="suite-sub">Selecciona un juego para comenzar</div>
   <div class="menu-grid">
-    <div class="game-card" onclick="goTo('generala')">
-      <span class="emoji">🎲</span>
-      <div class="game-name">Generala</div>
-      <div class="game-desc">Dados · hasta 6 jugadores</div>
-    </div>
-    <div class="game-card" onclick="goTo('truco')">
-      <span class="emoji">⚔️</span>
-      <div class="game-name">Truco</div>
-      <div class="game-desc">Cartas · 2 equipos</div>
-    </div>
-    <div class="game-card" onclick="goTo('escoba')">
-      <span class="emoji">🃏</span>
-      <div class="game-name">Escoba de 15</div>
-      <div class="game-desc">Cartas · hasta 4 jugadores</div>
-    </div>
-    <div class="game-card" onclick="goTo('loba')">
-      <span class="emoji">🐺</span>
-      <div class="game-name">Loba</div>
-      <div class="game-desc">Cartas · hasta 6 jugadores</div>
-    </div>
+    <div class="game-card" data-goto="generala"><span class="emoji">&#127922;</span><div class="game-name">Generala</div><div class="game-desc">Dados &middot; hasta 6 jugadores</div></div>
+    <div class="game-card" data-goto="truco"><span class="emoji">&#9876;&#65039;</span><div class="game-name">Truco</div><div class="game-desc">Cartas &middot; 2 equipos</div></div>
+    <div class="game-card" data-goto="escoba"><span class="emoji">&#127183;</span><div class="game-name">Escoba de 15</div><div class="game-desc">Cartas &middot; hasta 4 jugadores</div></div>
+    <div class="game-card" data-goto="loba"><span class="emoji">&#128062;</span><div class="game-name">Loba</div><div class="game-desc">Cartas &middot; hasta 6 jugadores</div></div>
   </div>
-
-  <!-- ESPACIO PUBLICITARIO (activar cuando tengas AdSense aprobado) -->
-  <div class="ad-slot" id="ad-home">
-    <!-- ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins -->
-    📢 Espacio publicitario
-  </div>
-
+  <div class="ad-slot">&#128226; Espacio publicitario</div>
 </div>
 
-<!-- ════════ GENERALA ════════ -->
+<!-- GENERALA -->
 <div id="generala" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">🎲 Generala</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Generala</div>
   </div>
-
   <div id="gen-setup" class="player-setup">
     <h3>Jugadores</h3>
     <div class="num-players-ctrl" id="gen-np-ctrl"></div>
     <div class="player-inputs" id="gen-player-inputs"></div>
     <br>
-    <button class="btn btn-green" onclick="startGenerala()">Comenzar Partida ▶</button>
+    <button class="btn btn-green" id="btn-start-generala">Comenzar Partida</button>
   </div>
-
-  <div id="gen-game" style="display:none; flex-direction:column; gap:10px;">
-    <div class="table-wrap">
-      <table id="gen-table">
-        <thead><tr id="gen-head"></tr></thead>
-        <tbody id="gen-body"></tbody>
-      </table>
-    </div>
+  <div id="gen-game" style="display:none;flex-direction:column;gap:10px;">
+    <div class="table-wrap"><table><thead><tr id="gen-head"></tr></thead><tbody id="gen-body"></tbody></table></div>
     <div class="btn-row">
-      <button class="btn btn-gold" onclick="calcWinner('generala')">🏆 Calcular Ganador</button>
-      <button class="btn btn-outline" onclick="toggleRules('gen-rules')">📖 Reglas</button>
+      <button class="btn btn-gold" id="btn-winner-generala">&#127942; Calcular Ganador</button>
+      <button class="btn btn-outline" id="btn-rules-generala">&#128214; Reglas</button>
     </div>
     <div class="rules-box" id="gen-rules">
-      <h4>📖 Reglas de la Generala</h4>
+      <h4>Reglas de la Generala</h4>
       <ul>
-        <li><strong>1–6:</strong> Suma de todos los dados con ese número</li>
-        <li><strong>Escalera:</strong> 1-2-3-4-5 o 2-3-4-5-6 → 20 pts</li>
-        <li><strong>Full:</strong> 3 iguales + 2 iguales → 30 pts</li>
-        <li><strong>Póker:</strong> 4 dados iguales → 40 pts</li>
-        <li><strong>Generala:</strong> 5 dados iguales → 50 pts (primera vez) o 100 pts si es al primer tiro</li>
-        <li><strong>Doble Generala:</strong> Segunda generala en la misma partida → 100 pts</li>
-        <li>Se tiene hasta 3 tiradas por turno. Si se logra al primer tiro, el puntaje se duplica (excepto números).</li>
-        <li>Se puede anotar 0 si no se logra la combinación.</li>
+        <li><strong>1 a 6:</strong> Suma de todos los dados con ese numero</li>
+        <li><strong>Escalera:</strong> 1-2-3-4-5 o 2-3-4-5-6 = 20 pts</li>
+        <li><strong>Full:</strong> 3 iguales + 2 iguales = 30 pts</li>
+        <li><strong>Poker:</strong> 4 dados iguales = 40 pts</li>
+        <li><strong>Generala:</strong> 5 dados iguales = 50 pts</li>
+        <li><strong>Doble Generala:</strong> Segunda generala = 100 pts</li>
+        <li>Se puede anotar 0 si no se logra la combinacion.</li>
       </ul>
     </div>
-    <button class="btn btn-outline" style="font-size:0.8rem;" onclick="resetGame('generala')">↺ Nueva Partida</button>
+    <button class="btn btn-outline" id="btn-reset-generala" style="font-size:0.8rem;">&#8635; Nueva Partida</button>
   </div>
 </div>
 
-<!-- ════════ TRUCO ════════ -->
+<!-- TRUCO -->
 <div id="truco" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">⚔️ Truco</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Truco</div>
   </div>
-
   <div id="truco-setup" class="player-setup">
     <h3>Equipos</h3>
     <div class="player-inputs">
-      <div class="player-input-row"><span>🔴</span><input id="t-team1" placeholder="Equipo 1" value="Nosotros"></div>
-      <div class="player-input-row"><span>🔵</span><input id="t-team2" placeholder="Equipo 2" value="Ellos"></div>
+      <div class="player-input-row"><span>&#128308;</span><input id="t-team1" placeholder="Equipo 1" value="Nosotros"></div>
+      <div class="player-input-row"><span>&#128309;</span><input id="t-team2" placeholder="Equipo 2" value="Ellos"></div>
     </div>
     <br>
-    <button class="btn btn-green" onclick="startTruco()">Comenzar Partida ▶</button>
+    <button class="btn btn-green" id="btn-start-truco">Comenzar Partida</button>
   </div>
-
-  <div id="truco-game" style="display:none; flex-direction:column; gap:10px;">
+  <div id="truco-game" style="display:none;flex-direction:column;gap:10px;">
     <div class="truco-grid">
-      <!-- EQUIPO 1 -->
-      <div class="truco-team" id="t-box-1">
+      <div class="truco-team">
         <div class="team-score-display" id="t-score-1">0</div>
         <div class="team-pts" id="t-name-1">Nosotros</div>
         <div class="truco-halves">
           <div class="truco-half">
-            <span class="truco-half-label label-malas">😈 Las Malas</span>
-            <div class="palitos-grid-malas" id="t-palitos-malas-1"></div>
+            <span class="truco-half-label label-malas">Las Malas</span>
+            <div class="palitos-grid-3" id="t-palitos-malas-1"></div>
           </div>
           <div class="truco-half">
-            <span class="truco-half-label label-buenas">😇 Las Buenas</span>
-            <div class="palitos-grid-malas" id="t-palitos-buenas-1"></div>
+            <span class="truco-half-label label-buenas">Las Buenas</span>
+            <div class="palitos-grid-3" id="t-palitos-buenas-1"></div>
           </div>
         </div>
         <div class="truco-btns">
-          <button class="btn btn-green" style="font-size:0.75rem;" onclick="addTrucoPts(0,1)">+1</button>
-          <button class="btn btn-blue" style="font-size:0.75rem;" onclick="addTrucoPts(0,2)">+2</button>
-          <button class="btn btn-accent" style="font-size:0.75rem;" onclick="addTrucoPts(0,3)">+3</button>
+          <button class="btn btn-green" id="t1-p1" style="font-size:0.78rem;">+1</button>
+          <button class="btn btn-blue" id="t1-p2" style="font-size:0.78rem;">+2</button>
+          <button class="btn btn-accent" id="t1-p3" style="font-size:0.78rem;">+3</button>
         </div>
-        <button class="btn btn-outline" style="font-size:0.75rem;" onclick="undoTruco(0)">↺ Deshacer</button>
+        <button class="btn btn-outline" id="t1-undo" style="font-size:0.75rem;">&#8635; Deshacer</button>
       </div>
-      <!-- EQUIPO 2 -->
-      <div class="truco-team" id="t-box-2">
+      <div class="truco-team">
         <div class="team-score-display" id="t-score-2">0</div>
         <div class="team-pts" id="t-name-2">Ellos</div>
         <div class="truco-halves">
           <div class="truco-half">
-            <span class="truco-half-label label-malas">😈 Las Malas</span>
-            <div class="palitos-grid-malas" id="t-palitos-malas-2"></div>
+            <span class="truco-half-label label-malas">Las Malas</span>
+            <div class="palitos-grid-3" id="t-palitos-malas-2"></div>
           </div>
           <div class="truco-half">
-            <span class="truco-half-label label-buenas">😇 Las Buenas</span>
-            <div class="palitos-grid-malas" id="t-palitos-buenas-2"></div>
+            <span class="truco-half-label label-buenas">Las Buenas</span>
+            <div class="palitos-grid-3" id="t-palitos-buenas-2"></div>
           </div>
         </div>
         <div class="truco-btns">
-          <button class="btn btn-green" style="font-size:0.75rem;" onclick="addTrucoPts(1,1)">+1</button>
-          <button class="btn btn-blue" style="font-size:0.75rem;" onclick="addTrucoPts(1,2)">+2</button>
-          <button class="btn btn-accent" style="font-size:0.75rem;" onclick="addTrucoPts(1,3)">+3</button>
+          <button class="btn btn-green" id="t2-p1" style="font-size:0.78rem;">+1</button>
+          <button class="btn btn-blue" id="t2-p2" style="font-size:0.78rem;">+2</button>
+          <button class="btn btn-accent" id="t2-p3" style="font-size:0.78rem;">+3</button>
         </div>
-        <button class="btn btn-outline" style="font-size:0.75rem;" onclick="undoTruco(1)">↺ Deshacer</button>
+        <button class="btn btn-outline" id="t2-undo" style="font-size:0.75rem;">&#8635; Deshacer</button>
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-gold" onclick="calcWinner('truco')">🏆 Calcular Ganador</button>
-      <button class="btn btn-outline" onclick="toggleRules('truco-rules')">📖 Reglas</button>
+      <button class="btn btn-gold" id="btn-winner-truco">&#127942; Calcular Ganador</button>
+      <button class="btn btn-outline" id="btn-rules-truco">&#128214; Reglas</button>
     </div>
     <div class="rules-box" id="truco-rules">
-      <h4>📖 Reglas del Truco</h4>
+      <h4>Reglas del Truco</h4>
       <ul>
-        <li>Se juega hasta <strong>30 puntos</strong>: primeras 15 son <em>las malas</em>, las siguientes 15 son <em>las buenas</em></li>
-        <li>Quien llega a 15 "se va a las buenas" — necesita otros 15 para ganar</li>
-        <li><strong>Truco:</strong> 2 ptos · Retruco: 3 · Vale cuatro: 4</li>
-        <li><strong>Envido:</strong> 2 ptos · Real envido: 3 · Falta envido: lo que falta para ganar</li>
+        <li>Se juega hasta <strong>30 puntos</strong>: primeras 15 son las malas, las siguientes 15 las buenas</li>
+        <li>Quien llega a 15 necesita otros 15 para ganar</li>
+        <li><strong>Truco:</strong> 2 ptos &middot; Retruco: 3 &middot; Vale cuatro: 4</li>
+        <li><strong>Envido:</strong> 2 ptos &middot; Real envido: 3 &middot; Falta envido: lo que falta para ganar</li>
       </ul>
     </div>
-    <button class="btn btn-outline" style="font-size:0.8rem;" onclick="resetGame('truco')">↺ Nueva Partida</button>
+    <button class="btn btn-outline" id="btn-reset-truco" style="font-size:0.8rem;">&#8635; Nueva Partida</button>
   </div>
 </div>
 
-<!-- ════════ ESCOBA DE 15 ════════ -->
+<!-- ESCOBA -->
 <div id="escoba" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">🃏 Escoba de 15</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Escoba de 15</div>
   </div>
-
   <div id="esc-setup" class="player-setup">
     <h3>Jugadores</h3>
     <div class="num-players-ctrl" id="esc-np-ctrl"></div>
     <div class="player-inputs" id="esc-player-inputs"></div>
     <br>
-    <button class="btn btn-green" onclick="startEscoba()">Comenzar Partida ▶</button>
+    <button class="btn btn-green" id="btn-start-escoba">Comenzar Partida</button>
   </div>
-
-  <div id="esc-game" style="display:none; flex-direction:column; gap:10px;">
-    <div class="table-wrap">
-      <table id="esc-table">
-        <thead><tr id="esc-head"></tr></thead>
-        <tbody id="esc-body"></tbody>
-      </table>
-    </div>
+  <div id="esc-game" style="display:none;flex-direction:column;gap:10px;">
+    <div class="table-wrap"><table><thead><tr id="esc-head"></tr></thead><tbody id="esc-body"></tbody></table></div>
     <div class="btn-row">
-      <button class="btn btn-gold" onclick="calcWinner('escoba')">🏆 Calcular Ganador</button>
-      <button class="btn btn-outline" onclick="toggleRules('esc-rules')">📖 Reglas</button>
+      <button class="btn btn-gold" id="btn-winner-escoba">&#127942; Calcular Ganador</button>
+      <button class="btn btn-outline" id="btn-rules-escoba">&#128214; Reglas</button>
     </div>
     <div class="rules-box" id="esc-rules">
-      <h4>📖 Reglas de Escoba de 15</h4>
+      <h4>Reglas de Escoba de 15</h4>
       <ul>
-        <li><strong>Escobas:</strong> 1 pto por cada escoba (sumar cartas de la mesa que den 15)</li>
-        <li><strong>Cartas:</strong> 1 pto al que tenga más cartas</li>
-        <li><strong>Oros:</strong> 1 pto al que tenga más oros</li>
-        <li><strong>Siete de Oro:</strong> 1 pto al que tenga el 7 de oros</li>
-        <li><strong>Setenta:</strong> 1 pto al que forme la mejor combinación (una carta de cada palo, la más alta)</li>
-        <li>Gana quien llegue primero a <strong>15 puntos</strong> (o el acordado).</li>
+        <li><strong>Escobas:</strong> 1 pto por cada escoba</li>
+        <li><strong>Cartas:</strong> 1 pto al que tenga mas cartas</li>
+        <li><strong>Oros:</strong> 1 pto al que tenga mas oros</li>
+        <li><strong>Siete de Oro:</strong> 1 pto</li>
+        <li><strong>Setenta:</strong> 1 pto al mejor conjunto</li>
+        <li>Gana quien llegue primero a <strong>15 puntos</strong></li>
       </ul>
     </div>
-    <button class="btn btn-outline" style="font-size:0.8rem;" onclick="resetGame('escoba')">↺ Nueva Partida</button>
+    <button class="btn btn-outline" id="btn-reset-escoba" style="font-size:0.8rem;">&#8635; Nueva Partida</button>
   </div>
 </div>
 
-<!-- ════════ LOBA ════════ -->
+<!-- LOBA -->
 <div id="loba" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">🐺 Loba</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Loba</div>
   </div>
-
   <div id="lob-setup" class="player-setup">
     <h3>Jugadores</h3>
     <div class="num-players-ctrl" id="lob-np-ctrl"></div>
     <div class="player-inputs" id="lob-player-inputs"></div>
     <br>
-    <button class="btn btn-green" onclick="startLoba()">Comenzar Partida ▶</button>
+    <button class="btn btn-green" id="btn-start-loba">Comenzar Partida</button>
   </div>
-
-  <div id="lob-game" style="display:none; flex-direction:column; gap:10px;">
-    <div class="table-wrap">
-      <table id="lob-table">
-        <thead><tr id="lob-head"></tr></thead>
-        <tbody id="lob-body"></tbody>
-      </table>
-    </div>
+  <div id="lob-game" style="display:none;flex-direction:column;gap:10px;">
+    <div class="table-wrap"><table><thead><tr id="lob-head"></tr></thead><tbody id="lob-body"></tbody></table></div>
     <div class="btn-row">
-      <button class="btn btn-gold" onclick="calcWinner('loba')">🏆 Calcular Ganador</button>
-      <button class="btn btn-outline" onclick="toggleRules('lob-rules')">📖 Reglas</button>
+      <button class="btn btn-gold" id="btn-winner-loba">&#127942; Calcular Ganador</button>
+      <button class="btn btn-outline" id="btn-rules-loba">&#128214; Reglas</button>
     </div>
     <div class="rules-box" id="lob-rules">
-      <h4>📖 Reglas de Loba</h4>
+      <h4>Reglas de Loba</h4>
       <ul>
-        <li>Juego de cartas con mazo español (40 cartas)</li>
-        <li>Se anota el <strong>puntaje negativo</strong> de las cartas que no se bajaron</li>
+        <li>Se anota el <strong>puntaje negativo</strong> de las cartas no bajadas</li>
         <li><strong>Valores:</strong> As=1, 2-7=valor, 10=10, 11=10, 12=10</li>
-        <li>Se puede bajar <strong>escaleras</strong> (3+ cartas del mismo palo consecutivas) o <strong>piernas</strong> (3+ cartas del mismo número)</li>
-        <li>Gana quien primero <strong>llegue a 0</strong> bajando todo, o quien tenga <strong>menos puntos</strong> al final</li>
-        <li>En este anotador se suman puntos negativos: <strong>gana quien tenga menos</strong></li>
+        <li>Se puede bajar <strong>escaleras</strong> o <strong>piernas</strong> (3+ cartas iguales)</li>
+        <li>Gana quien tenga <strong>menos puntos</strong></li>
       </ul>
     </div>
-    <button class="btn btn-outline" style="font-size:0.8rem;" onclick="resetGame('loba')">↺ Nueva Partida</button>
+    <button class="btn btn-outline" id="btn-reset-loba" style="font-size:0.8rem;">&#8635; Nueva Partida</button>
   </div>
 </div>
 
-<!-- ════════ ABOUT SCREEN ════════ -->
+<!-- ABOUT -->
 <div id="about" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">ℹ️ Acerca de</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Acerca de</div>
   </div>
   <div class="legal-content">
-    <h2>¿Qué es Javi's Game Suite?</h2>
-    <p>Javi's Game Suite es una aplicación web gratuita para anotar los puntos de los juegos de mesa más populares de Argentina: Generala, Truco, Escoba de 15 y Loba.</p>
-    <h2>¿Cómo funciona?</h2>
-    <p>La app funciona completamente en tu navegador, sin necesidad de instalar nada. No requiere registro ni cuenta de usuario. Todos los datos se quedan en tu dispositivo y no se envían a ningún servidor.</p>
-    <h2>¿Es gratis?</h2>
-    <p>Sí, completamente gratuita. Para mantener el sitio en funcionamiento, puede mostrar anuncios de Google AdSense que ayudan a cubrir los costos de hosting.</p>
+    <h2>Que es Javi's Game Suite?</h2>
+    <p>Aplicacion web gratuita para anotar los puntos de los juegos de mesa mas populares de Argentina: Generala, Truco, Escoba de 15 y Loba.</p>
+    <h2>Como funciona?</h2>
+    <p>Funciona completamente en tu navegador sin instalar nada. No requiere registro ni cuenta de usuario.</p>
+    <h2>Es gratis?</h2>
+    <p>Si, completamente gratuita. Para mantener el sitio puede mostrar anuncios de Google AdSense.</p>
     <h2>Contacto</h2>
-    <p>Para sugerencias, reportar errores o consultas podés escribirnos a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fbf7f6ecf9fbecf7d8f2f9eef1fff9f5fdebedf1ecfdb6fbf7f5">[email&#160;protected]</a></strong></p>
+    <p>Para sugerencias o consultas: <strong>javiercastromdp@gmail.com</strong></p>
   </div>
 </div>
 
-<!-- ════════ PRIVACY POLICY SCREEN ════════ -->
+<!-- PRIVACY -->
 <div id="privacy" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">🔒 Política de Privacidad</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Privacidad</div>
   </div>
   <div class="legal-content">
-    <h2>Última actualización: enero 2025</h2>
-    <p>En Javi's Game Suite nos comprometemos a proteger tu privacidad. Esta política explica qué datos recopilamos y cómo los usamos.</p>
-
+    <h2>Ultima actualizacion: enero 2025</h2>
+    <p>En Javi's Game Suite nos comprometemos a proteger tu privacidad.</p>
     <h2>Datos que recopilamos</h2>
-    <p>Esta aplicación <strong>no recopila datos personales</strong> de sus usuarios. No hay registro, login, ni almacenamiento de información en servidores propios.</p>
-
-    <h2>Google AdSense y cookies de terceros</h2>
-    <p>Este sitio puede utilizar Google AdSense para mostrar publicidad. Google puede utilizar cookies para mostrar anuncios basados en tus visitas anteriores a este y otros sitios web. Podés optar por no recibir publicidad personalizada visitando <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--blue)">Configuración de anuncios de Google</a>.</p>
-    <p>Google, como proveedor externo, utiliza cookies para publicar anuncios. El uso de la cookie DART por parte de Google permite publicar anuncios a los visitantes según su visita a este sitio y otros sitios en Internet.</p>
-
-    <h2>Cookies</h2>
-    <p>Usamos una cookie propia únicamente para recordar si ya aceptaste este aviso de cookies. No se usa para rastrear tu actividad.</p>
-
-    <h2>Servicios de terceros</h2>
-    <ul>
-      <li><strong>Google AdSense:</strong> publicidad contextual — <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--blue)">política de Google</a></li>
-      <li><strong>Google Fonts:</strong> fuentes tipográficas cargadas desde servidores de Google</li>
-    </ul>
-
-    <h2>Tus derechos</h2>
-    <p>Podés deshabilitar las cookies desde la configuración de tu navegador en cualquier momento. Ten en cuenta que esto puede afectar el funcionamiento de algunos servicios.</p>
-
+    <p>Esta aplicacion <strong>no recopila datos personales</strong>. No hay registro ni almacenamiento en servidores propios.</p>
+    <h2>Google AdSense y cookies</h2>
+    <p>Este sitio puede usar Google AdSense para publicidad personalizada. Podes optarte por no recibirla en <a href="https://www.google.com/settings/ads" target="_blank">Configuracion de anuncios de Google</a>.</p>
     <h2>Contacto</h2>
-    <p>Para consultas sobre privacidad escribinos a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41222e2f352022352e012b20372826202c2432342835246f222e2c">[email&#160;protected]</a></strong></p>
+    <p>Consultas: <strong>javiercastromdp@gmail.com</strong></p>
   </div>
 </div>
 
-<!-- ════════ TERMS SCREEN ════════ -->
+<!-- TERMS -->
 <div id="terms" class="screen">
   <div class="screen-header">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <div class="screen-title">📄 Términos de Uso</div>
+    <button class="back-btn" data-goto="home">&#8592;</button>
+    <div class="screen-title">Terminos</div>
   </div>
   <div class="legal-content">
-    <h2>Última actualización: enero 2025</h2>
-    <p>Al usar Javi's Game Suite aceptás los siguientes términos y condiciones.</p>
-
+    <h2>Ultima actualizacion: enero 2025</h2>
+    <p>Al usar Javi's Game Suite aceptas los siguientes terminos.</p>
     <h2>Uso del servicio</h2>
-    <p>Esta aplicación es de uso personal y recreativo. Queda prohibido su uso para fines comerciales sin autorización expresa del titular.</p>
-
-    <h2>Disponibilidad</h2>
-    <p>Nos reservamos el derecho de modificar, suspender o discontinuar el servicio en cualquier momento sin previo aviso.</p>
-
+    <p>Esta aplicacion es de uso personal y recreativo.</p>
     <h2>Publicidad</h2>
-    <p>El sitio puede mostrar anuncios de terceros (Google AdSense). No somos responsables del contenido de dichos anuncios.</p>
-
-    <h2>Limitación de responsabilidad</h2>
-    <p>Javi's Game Suite se provee "tal como está". No garantizamos que el servicio esté libre de errores ni disponible de forma ininterrumpida.</p>
-
-    <h2>Propiedad intelectual</h2>
-    <p>El código, diseño y contenido de esta aplicación es propiedad de sus creadores. Los nombres de los juegos (Generala, Truco, etc.) son de dominio público.</p>
-
+    <p>El sitio puede mostrar anuncios de Google AdSense. No somos responsables del contenido de dichos anuncios.</p>
+    <h2>Limitacion de responsabilidad</h2>
+    <p>Javi's Game Suite se provee "tal como esta", sin garantias de disponibilidad continua.</p>
     <h2>Contacto</h2>
-    <p>Consultas: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e4e8e9f3e6e4f3e8c7ede6f1eee0e6eae2f4f2eef3e2a9e4e8ea">[email&#160;protected]</a></strong></p>
+    <p>Consultas: <strong>javiercastromdp@gmail.com</strong></p>
   </div>
 </div>
 
-<!-- ════════ FOOTER ════════ -->
-<footer class="site-footer">
-  <div class="footer-links">
-    <a onclick="goTo('about')">Acerca de</a>
-    <a onclick="goTo('privacy')">Política de Privacidad</a>
-    <a onclick="goTo('terms')">Términos de Uso</a>
-  </div>
-  <div class="footer-copy">© 2025 Javi's Game Suite · Hecho con ❤️ en Argentina</div>
-</footer>
-
-<!-- ════════ COOKIE BANNER ════════ -->
-<div class="cookie-banner" id="cookie-banner">
-  <p>Usamos cookies de terceros (Google AdSense) para mostrar publicidad. Al continuar navegando aceptás nuestra <a onclick="goTo('privacy')">Política de Privacidad</a>.</p>
-  <button class="cookie-accept" onclick="acceptCookies()">Aceptar</button>
-</div>
-
-
-<div class="modal" id="winner-modal" onclick="closeModal()">
-  <div class="trophy">🏆</div>
-  <div class="winner-label">¡Ganador!</div>
-  <div class="winner-name" id="modal-winner-name">—</div>
+<!-- WINNER MODAL -->
+<div class="modal" id="winner-modal">
+  <div class="trophy">&#127942;</div>
+  <div class="winner-label">Ganador!</div>
+  <div class="winner-name" id="modal-winner-name">-</div>
   <div class="winner-score" id="modal-winner-score"></div>
   <br>
-  <div style="font-size:0.8rem; color:var(--muted);">Tocá para cerrar</div>
+  <button class="btn btn-outline" id="btn-close-modal" style="width:auto;padding:10px 30px;">Cerrar</button>
 </div>
 
-<!-- ════════ TOAST ════════ -->
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ══════════════════════════════════════════════
-//  COOKIES BANNER
-// ══════════════════════════════════════════════
-function acceptCookies() {
-  document.cookie = "cookies_accepted=1; max-age=" + (60*60*24*365) + "; path=/";
-  document.getElementById('cookie-banner').classList.add('hidden');
-}
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-links">
+    <a data-goto="about">Acerca de</a>
+    <a data-goto="privacy">Politica de Privacidad</a>
+    <a data-goto="terms">Terminos de Uso</a>
+  </div>
+  <div class="footer-copy">2025 Javi's Game Suite - Hecho con amor en Argentina</div>
+</footer>
 
-function checkCookies() {
-  if (document.cookie.includes('cookies_accepted=1')) {
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookie-banner">
+  <p>Usamos cookies de terceros (Google AdSense). Al continuar aceptas nuestra <a data-goto="privacy">Politica de Privacidad</a>.</p>
+  <button class="cookie-accept" id="btn-cookie-accept">Aceptar</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ─── NAVIGATION ───────────────────────────────
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(function(s) {
+      s.classList.remove('active');
+    });
+    var target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Bind all data-goto elements
+  document.body.addEventListener('click', function(e) {
+    var el = e.target.closest('[data-goto]');
+    if (el) goTo(el.getAttribute('data-goto'));
+  });
+
+  // Modal close
+  document.getElementById('btn-close-modal').addEventListener('click', function() {
+    document.getElementById('winner-modal').classList.remove('open');
+  });
+
+  // Cookie banner
+  document.getElementById('btn-cookie-accept').addEventListener('click', function() {
+    try { localStorage.setItem('cookies_ok', '1'); } catch(e) {}
     document.getElementById('cookie-banner').classList.add('hidden');
-  }
-}
-checkCookies();
-
-// ══════════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════════
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-// ══════════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function toggleRules(id) {
-  document.getElementById(id).classList.toggle('open');
-}
-
-function closeModal() {
-  document.getElementById('winner-modal').classList.remove('open');
-}
-
-function showWinner(names, scoreText) {
-  document.getElementById('modal-winner-name').textContent = names;
-  document.getElementById('modal-winner-score').textContent = scoreText;
-  document.getElementById('winner-modal').classList.add('open');
-  confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
-}
-
-function makeInput(cls = 'score-input') {
-  const i = document.createElement('input');
-  i.type = 'number';
-  i.className = cls;
-  i.placeholder = '—';
-  return i;
-}
-
-// ══════════════════════════════════════════════
-//  PLAYER SETUP HELPERS
-// ══════════════════════════════════════════════
-function buildPlayerSetup(prefix, min, max, defaultCount) {
-  const npCtrl = document.getElementById(`${prefix}-np-ctrl`);
-  const inputs = document.getElementById(`${prefix}-player-inputs`);
-  const emojis = ['👤','👥','🎮','⭐','🔥','💎'];
-
-  function setCount(n) {
-    npCtrl.querySelectorAll('.np-btn').forEach(b => b.classList.remove('active'));
-    npCtrl.querySelector(`[data-n="${n}"]`).classList.add('active');
-    inputs.innerHTML = '';
-    for (let i = 0; i < n; i++) {
-      const row = document.createElement('div');
-      row.className = 'player-input-row';
-      row.innerHTML = `<span>${emojis[i]}</span>`;
-      const inp = document.createElement('input');
-      inp.placeholder = `Jugador ${i + 1}`;
-      inp.id = `${prefix}-p${i}`;
-      row.appendChild(inp);
-      inputs.appendChild(row);
+  });
+  try {
+    if (localStorage.getItem('cookies_ok') === '1') {
+      document.getElementById('cookie-banner').classList.add('hidden');
     }
+  } catch(e) {}
+
+  // ─── UTILS ────────────────────────────────────
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
   }
 
-  for (let n = min; n <= max; n++) {
-    const b = document.createElement('button');
-    b.className = 'np-btn';
-    b.dataset.n = n;
-    b.textContent = n + (n === 1 ? ' jugador' : ' jugadores');
-    b.onclick = () => setCount(n);
-    npCtrl.appendChild(b);
+  function showWinner(names, scoreText) {
+    document.getElementById('modal-winner-name').textContent = names;
+    document.getElementById('modal-winner-score').textContent = scoreText;
+    document.getElementById('winner-modal').classList.add('open');
+    if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
   }
-  setCount(defaultCount);
-}
 
-function getPlayers(prefix, count) {
-  const players = [];
-  for (let i = 0; i < count; i++) {
-    const el = document.getElementById(`${prefix}-p${i}`);
-    players.push(el && el.value.trim() ? el.value.trim() : `Jugador ${i+1}`);
+  function makeInput() {
+    var i = document.createElement('input');
+    i.type = 'number';
+    i.className = 'score-input';
+    i.placeholder = '-';
+    return i;
   }
-  return players;
-}
 
-function getActiveCount(prefix) {
-  const btn = document.getElementById(`${prefix}-np-ctrl`).querySelector('.np-btn.active');
-  return btn ? parseInt(btn.dataset.n) : 2;
-}
+  // ─── PLAYER SETUP ─────────────────────────────
+  var EMOJIS = ['P1','P2','P3','P4','P5','P6'];
 
-// ══════════════════════════════════════════════
-//  GENERALA
-// ══════════════════════════════════════════════
-const GEN_ROWS = [
-  { key: 'n1', label: '1' },
-  { key: 'n2', label: '2' },
-  { key: 'n3', label: '3' },
-  { key: 'n4', label: '4' },
-  { key: 'n5', label: '5' },
-  { key: 'n6', label: '6' },
-  { key: 'escalera', label: '🔢 Escalera' },
-  { key: 'full', label: '🔁 Full' },
-  { key: 'poker', label: '🃏 Póker' },
-  { key: 'generala', label: '🌟 Generala' },
-  { key: 'doblegen', label: '💥 Doble Gen.' },
-];
-
-let genPlayers = [];
-
-buildPlayerSetup('gen', 2, 6, 2);
-
-function startGenerala() {
-  const n = getActiveCount('gen');
-  genPlayers = getPlayers('gen', n);
-
-  // Build table
-  const head = document.getElementById('gen-head');
-  head.innerHTML = '<th class="row-label">Combinación</th>';
-  genPlayers.forEach(p => {
-    const th = document.createElement('th');
-    th.textContent = p;
-    head.appendChild(th);
-  });
-
-  const body = document.getElementById('gen-body');
-  body.innerHTML = '';
-
-  GEN_ROWS.forEach(row => {
-    const tr = document.createElement('tr');
-    tr.className = row.cls;
-    const td0 = document.createElement('td');
-    td0.className = 'row-label';
-    td0.textContent = row.label;
-    tr.appendChild(td0);
-    genPlayers.forEach((_, pi) => {
-      const td = document.createElement('td');
-      const inp = makeInput();
-      inp.id = `gen-${row.key}-${pi}`;
-      inp.addEventListener('change', updateGenTotals);
-      td.appendChild(inp);
-      tr.appendChild(td);
-    });
-    body.appendChild(tr);
-  });
-
-  // Total row
-  const totalTr = document.createElement('tr');
-  totalTr.className = 'total-row';
-  const tdLabel = document.createElement('td');
-  tdLabel.className = 'row-label';
-  tdLabel.textContent = '🏆 Total';
-  totalTr.appendChild(tdLabel);
-  genPlayers.forEach((_, pi) => {
-    const td = document.createElement('td');
-    td.id = `gen-total-${pi}`;
-    td.textContent = '0';
-    totalTr.appendChild(td);
-  });
-  body.appendChild(totalTr);
-
-  document.getElementById('gen-setup').style.display = 'none';
-  const gameDiv = document.getElementById('gen-game');
-  gameDiv.style.display = 'flex';
-}
-
-function updateGenTotals() {
-  genPlayers.forEach((_, pi) => {
-    let sum = 0;
-    GEN_ROWS.forEach(row => {
-      const el = document.getElementById(`gen-${row.key}-${pi}`);
-      sum += el && el.value ? parseInt(el.value) || 0 : 0;
-    });
-    document.getElementById(`gen-total-${pi}`).textContent = sum;
-  });
-}
-
-function calcWinner(game) {
-  if (game === 'generala') {
-    const scores = genPlayers.map((p, i) => ({
-      name: p,
-      score: parseInt(document.getElementById(`gen-total-${i}`).textContent) || 0
-    }));
-    const max = Math.max(...scores.map(s => s.score));
-    const winners = scores.filter(s => s.score === max);
-    if (max === 0) { showToast('¡Aún no hay puntajes!'); return; }
-    showWinner(winners.map(w => w.name).join(' & '), `${max} puntos`);
-  } else if (game === 'truco') {
-    const s = trucoState;
-    const max = Math.max(...s.scores);
-    const idx = s.scores.indexOf(max);
-    const other = 1 - idx;
-    if (max === 0) { showToast('¡Aún no hay puntajes!'); return; }
-    if (s.scores[0] === s.scores[1]) {
-      showWinner(s.teams[0] + ' & ' + s.teams[1], '¡Empate! ' + max + ' puntos');
-    } else {
-      showWinner(s.teams[idx], `${max} pts vs ${s.scores[other]}`);
+  function buildSetup(prefix, min, max, def) {
+    var ctrl = document.getElementById(prefix + '-np-ctrl');
+    var wrap = document.getElementById(prefix + '-player-inputs');
+    function setN(n) {
+      ctrl.querySelectorAll('.np-btn').forEach(function(b) { b.classList.remove('active'); });
+      ctrl.querySelector('[data-n="' + n + '"]').classList.add('active');
+      wrap.innerHTML = '';
+      for (var i = 0; i < n; i++) {
+        var row = document.createElement('div');
+        row.className = 'player-input-row';
+        var sp = document.createElement('span');
+        sp.textContent = (i + 1) + '.';
+        sp.style.fontSize = '0.9rem';
+        var inp = document.createElement('input');
+        inp.placeholder = 'Jugador ' + (i + 1);
+        inp.id = prefix + '-p' + i;
+        row.appendChild(sp);
+        row.appendChild(inp);
+        wrap.appendChild(row);
+      }
     }
-  } else if (game === 'escoba') {
-    const scores = escobaPlayers.map((p, i) => ({
-      name: p,
-      score: parseInt(document.getElementById(`esc-total-${i}`)?.textContent) || 0
-    }));
-    const max = Math.max(...scores.map(s => s.score));
-    const winners = scores.filter(s => s.score === max);
-    if (max === 0) { showToast('¡Aún no hay puntajes!'); return; }
-    showWinner(winners.map(w => w.name).join(' & '), `${max} puntos`);
-  } else if (game === 'loba') {
-    const scores = lobaPlayers.map((p, i) => ({
-      name: p,
-      score: parseInt(document.getElementById(`lob-total-${i}`)?.textContent) || 0
-    }));
-    const min = Math.min(...scores.map(s => s.score));
-    const winners = scores.filter(s => s.score === min);
-    showWinner(winners.map(w => w.name).join(' & '), `${min} puntos (menos es mejor)`);
+    for (var n = min; n <= max; n++) {
+      (function(num) {
+        var b = document.createElement('button');
+        b.className = 'np-btn';
+        b.setAttribute('data-n', num);
+        b.textContent = num + ' jug.';
+        b.addEventListener('click', function() { setN(num); });
+        ctrl.appendChild(b);
+      })(n);
+    }
+    setN(def);
   }
-}
 
-// ══════════════════════════════════════════════
-//  TRUCO
-// ══════════════════════════════════════════════
-let trucoState = { teams: ['Nosotros', 'Ellos'], scores: [0, 0], history: [[], []] };
+  function getPlayers(prefix) {
+    var active = document.querySelector('#' + prefix + '-np-ctrl .np-btn.active');
+    var count = active ? parseInt(active.getAttribute('data-n')) : 2;
+    var arr = [];
+    for (var i = 0; i < count; i++) {
+      var el = document.getElementById(prefix + '-p' + i);
+      arr.push((el && el.value.trim()) ? el.value.trim() : 'Jugador ' + (i + 1));
+    }
+    return arr;
+  }
 
-function startTruco() {
-  trucoState.teams = [
-    document.getElementById('t-team1').value.trim() || 'Nosotros',
-    document.getElementById('t-team2').value.trim() || 'Ellos'
+  // ─── GENERALA ─────────────────────────────────
+  var GEN_ROWS = [
+    {key:'n1',label:'1'},{key:'n2',label:'2'},{key:'n3',label:'3'},
+    {key:'n4',label:'4'},{key:'n5',label:'5'},{key:'n6',label:'6'},
+    {key:'escalera',label:'Escalera'},{key:'full',label:'Full'},
+    {key:'poker',label:'Poker'},{key:'generala',label:'Generala'},
+    {key:'doblegen',label:'Doble Gen.'}
   ];
-  trucoState.scores = [0, 0];
-  trucoState.history = [[], []];
+  var genPlayers = [];
 
-  document.getElementById('t-name-1').textContent = trucoState.teams[0] + ' · 😈 En las malas';
-  document.getElementById('t-name-2').textContent = trucoState.teams[1] + ' · 😈 En las malas';
+  buildSetup('gen', 2, 6, 2);
 
-  renderPalitos(0);
-  renderPalitos(1);
-  updateTrucoDisplay();
-
-  document.getElementById('truco-setup').style.display = 'none';
-  document.getElementById('truco-game').style.display = 'flex';
-}
-
-function renderPalitos(teamIdx) {
-  const score = trucoState.scores[teamIdx];
-  const malasScore = Math.min(score, 15);       // 0-15
-  const buenasScore = Math.max(score - 15, 0);  // 0-15
-
-  renderHalf(`t-palitos-malas-${teamIdx + 1}`, malasScore, 'active-half');
-  renderHalf(`t-palitos-buenas-${teamIdx + 1}`, buenasScore, 'buenas-half');
-}
-
-function renderHalf(containerId, score, boxClass) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  const sets = Math.floor(score / 5);
-  const remaining = score % 5;
-  const totalBoxes = 3; // always show 3 boxes (fits 15 pts max: 3×5)
-
-  for (let i = 0; i < totalBoxes; i++) {
-    const box = document.createElement('div');
-    box.className = `palito-set-sm ${boxClass}`;
-    box.innerHTML = `
-      <div class="pal pal-l"></div>
-      <div class="pal pal-t"></div>
-      <div class="pal pal-r"></div>
-      <div class="pal pal-b"></div>
-      <div class="pal pal-d"></div>
-    `;
-    const lines = box.querySelectorAll('.pal');
-    const filled = i < sets ? 5 : (i === sets ? remaining : 0);
-    for (let l = 0; l < filled; l++) lines[l].classList.add('on');
-    container.appendChild(box);
-  }
-}
-
-function addTrucoPts(teamIdx, pts) {
-  trucoState.history[teamIdx].push(trucoState.scores[teamIdx]);
-  const prev = trucoState.scores[teamIdx];
-  trucoState.scores[teamIdx] += pts;
-  const curr = trucoState.scores[teamIdx];
-  renderPalitos(teamIdx);
-  updateTrucoDisplay();
-  // Toast when crossing into "las buenas"
-  if (prev < 15 && curr >= 15) {
-    showToast(`${trucoState.teams[teamIdx]} se fue a las buenas! 😇`);
-  }
-  if (curr >= 30) {
-    setTimeout(() => calcWinner('truco'), 300);
-  }
-}
-
-function undoTruco(teamIdx) {
-  if (trucoState.history[teamIdx].length === 0) { showToast('Nada para deshacer'); return; }
-  trucoState.scores[teamIdx] = trucoState.history[teamIdx].pop();
-  renderPalitos(teamIdx);
-  updateTrucoDisplay();
-}
-
-function updateTrucoDisplay() {
-  for (let i = 0; i < 2; i++) {
-    const s = trucoState.scores[i];
-    const el = document.getElementById(`t-score-${i + 1}`);
-    const nameEl = document.getElementById(`t-name-${i + 1}`);
-    el.textContent = s;
-    // Color: red in malas, green in buenas
-    el.style.color = s >= 15 ? 'var(--green)' : 'var(--accent)';
-    const phase = s >= 15 ? '😇 En las buenas' : '😈 En las malas';
-    nameEl.textContent = `${trucoState.teams[i]} · ${phase}`;
-  }
-}
-
-// ══════════════════════════════════════════════
-//  ESCOBA DE 15
-// ══════════════════════════════════════════════
-const ESC_ROWS = [
-  { key: 'escobas', label: '🧹 Escobas' },
-  { key: 'cartas',  label: '🃏 Cartas' },
-  { key: 'oros',    label: '🥇 Oros' },
-  { key: 'sieteoro',label: '7⭐ Siete de Oro' },
-  { key: 'setenta', label: '📊 Setenta' },
-];
-
-let escobaPlayers = [];
-
-buildPlayerSetup('esc', 2, 4, 2);
-
-function startEscoba() {
-  const n = getActiveCount('esc');
-  escobaPlayers = getPlayers('esc', n);
-  buildGenericTable('esc', ESC_ROWS, escobaPlayers, updateEscTotals);
-  document.getElementById('esc-setup').style.display = 'none';
-  document.getElementById('esc-game').style.display = 'flex';
-}
-
-function updateEscTotals() {
-  escobaPlayers.forEach((_, pi) => {
-    let sum = 0;
-    ESC_ROWS.forEach(row => {
-      const el = document.getElementById(`esc-${row.key}-${pi}`);
-      sum += el && el.value ? parseInt(el.value) || 0 : 0;
+  document.getElementById('btn-start-generala').addEventListener('click', function() {
+    genPlayers = getPlayers('gen');
+    var head = document.getElementById('gen-head');
+    head.innerHTML = '<th class="row-label">Combinacion</th>';
+    genPlayers.forEach(function(p) {
+      var th = document.createElement('th');
+      th.textContent = p;
+      head.appendChild(th);
     });
-    document.getElementById(`esc-total-${pi}`).textContent = sum;
-  });
-}
-
-// ══════════════════════════════════════════════
-//  LOBA
-// ══════════════════════════════════════════════
-let lobaPlayers = [];
-let lobaRound = 1;
-
-buildPlayerSetup('lob', 2, 6, 3);
-
-function startLoba() {
-  const n = getActiveCount('lob');
-  lobaPlayers = getPlayers('lob', n);
-  lobaRound = 1;
-  buildLobaTable();
-  document.getElementById('lob-setup').style.display = 'none';
-  document.getElementById('lob-game').style.display = 'flex';
-}
-
-function buildLobaTable() {
-  const head = document.getElementById('lob-head');
-  head.innerHTML = '<th class="row-label">Ronda</th>';
-  lobaPlayers.forEach(p => {
-    const th = document.createElement('th');
-    th.textContent = p;
-    head.appendChild(th);
-  });
-
-  const body = document.getElementById('lob-body');
-  body.innerHTML = '';
-  addLobaRoundRow(body, lobaRound);
-
-  // Total row
-  const totalTr = document.createElement('tr');
-  totalTr.className = 'total-row';
-  totalTr.id = 'lob-total-row';
-  const td0 = document.createElement('td');
-  td0.className = 'row-label';
-  td0.textContent = '📊 Total';
-  totalTr.appendChild(td0);
-  lobaPlayers.forEach((_, pi) => {
-    const td = document.createElement('td');
-    td.id = `lob-total-${pi}`;
-    td.textContent = '0';
-    totalTr.appendChild(td);
-  });
-  body.appendChild(totalTr);
-
-  // Add round button
-  const addRow = document.createElement('tr');
-  const addTd = document.createElement('td');
-  addTd.colSpan = lobaPlayers.length + 1;
-  addTd.style.padding = '8px';
-  const addBtn = document.createElement('button');
-  addBtn.className = 'btn btn-blue';
-  addBtn.style.fontSize = '0.82rem';
-  addBtn.textContent = '+ Agregar Ronda';
-  addBtn.onclick = addLobaRound;
-  addTd.appendChild(addBtn);
-  addRow.appendChild(addTd);
-  body.appendChild(addRow);
-}
-
-function addLobaRoundRow(body, n) {
-  const totalRow = document.getElementById('lob-total-row');
-  const tr = document.createElement('tr');
-  tr.id = `lob-round-${n}`;
-  const td0 = document.createElement('td');
-  td0.className = 'row-label';
-  td0.textContent = `Ronda ${n}`;
-  tr.appendChild(td0);
-  lobaPlayers.forEach((_, pi) => {
-    const td = document.createElement('td');
-    const inp = makeInput();
-    inp.id = `lob-r${n}-${pi}`;
-    inp.addEventListener('change', updateLobaTotals);
-    td.appendChild(inp);
-    tr.appendChild(td);
-  });
-  if (totalRow) { body.insertBefore(tr, totalRow); }
-  else { body.appendChild(tr); }
-}
-
-function addLobaRound() {
-  lobaRound++;
-  const body = document.getElementById('lob-body');
-  const totalRow = document.getElementById('lob-total-row');
-  const addBtnRow = body.lastElementChild;
-  const newRow = document.createElement('tr');
-  newRow.id = `lob-round-${lobaRound}`;
-  const td0 = document.createElement('td');
-  td0.className = 'row-label';
-  td0.textContent = `Ronda ${lobaRound}`;
-  newRow.appendChild(td0);
-  lobaPlayers.forEach((_, pi) => {
-    const td = document.createElement('td');
-    const inp = makeInput();
-    inp.id = `lob-r${lobaRound}-${pi}`;
-    inp.addEventListener('change', updateLobaTotals);
-    td.appendChild(inp);
-    newRow.appendChild(td);
-  });
-  body.insertBefore(newRow, totalRow);
-}
-
-function updateLobaTotals() {
-  lobaPlayers.forEach((_, pi) => {
-    let sum = 0;
-    for (let r = 1; r <= lobaRound; r++) {
-      const el = document.getElementById(`lob-r${r}-${pi}`);
-      sum += el && el.value ? parseInt(el.value) || 0 : 0;
-    }
-    const tot = document.getElementById(`lob-total-${pi}`);
-    if (tot) tot.textContent = sum;
-  });
-}
-
-// ══════════════════════════════════════════════
-//  GENERIC TABLE BUILDER (for Escoba)
-// ══════════════════════════════════════════════
-function buildGenericTable(prefix, rows, players, onchange) {
-  const head = document.getElementById(`${prefix}-head`);
-  head.innerHTML = '<th class="row-label">Categoría</th>';
-  players.forEach(p => {
-    const th = document.createElement('th');
-    th.textContent = p;
-    head.appendChild(th);
-  });
-
-  const body = document.getElementById(`${prefix}-body`);
-  body.innerHTML = '';
-
-  rows.forEach(row => {
-    const tr = document.createElement('tr');
-    const td0 = document.createElement('td');
-    td0.className = 'row-label';
-    td0.textContent = row.label;
-    tr.appendChild(td0);
-    players.forEach((_, pi) => {
-      const td = document.createElement('td');
-      const inp = makeInput();
-      inp.id = `${prefix}-${row.key}-${pi}`;
-      inp.addEventListener('change', onchange);
-      td.appendChild(inp);
-      tr.appendChild(td);
+    var body = document.getElementById('gen-body');
+    body.innerHTML = '';
+    GEN_ROWS.forEach(function(row) {
+      var tr = document.createElement('tr');
+      var td0 = document.createElement('td');
+      td0.className = 'row-label';
+      td0.textContent = row.label;
+      tr.appendChild(td0);
+      genPlayers.forEach(function(p, pi) {
+        var td = document.createElement('td');
+        var inp = makeInput();
+        inp.id = 'gen-' + row.key + '-' + pi;
+        inp.addEventListener('input', updateGenTotals);
+        td.appendChild(inp);
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
     });
-    body.appendChild(tr);
-  });
-
-  // Round rows for Escoba (multiple rounds)
-  // Add round tracking
-  const roundCtrlTr = document.createElement('tr');
-  roundCtrlTr.id = `${prefix}-round-ctrl-row`;
-  const rcTd = document.createElement('td');
-  rcTd.colSpan = players.length + 1;
-  rcTd.style.padding = '8px';
-  const rcBtn = document.createElement('button');
-  rcBtn.className = 'btn btn-blue';
-  rcBtn.style.fontSize = '0.82rem';
-  rcBtn.textContent = '+ Nueva Ronda (acumular)';
-  rcBtn.onclick = () => accumulateEscoba(players, rows, onchange);
-  rcTd.appendChild(rcBtn);
-  roundCtrlTr.appendChild(rcTd);
-  body.appendChild(roundCtrlTr);
-
-  // Total row
-  const totalTr = document.createElement('tr');
-  totalTr.className = 'total-row';
-  const tdLabel = document.createElement('td');
-  tdLabel.className = 'row-label';
-  tdLabel.textContent = '🏆 Total';
-  totalTr.appendChild(tdLabel);
-  players.forEach((_, pi) => {
-    const td = document.createElement('td');
-    td.id = `${prefix}-total-${pi}`;
-    td.textContent = '0';
-    totalTr.appendChild(td);
-  });
-  body.appendChild(totalTr);
-}
-
-const escAccumulated = {};
-function accumulateEscoba(players, rows, onchange) {
-  players.forEach((_, pi) => {
-    if (!escAccumulated[pi]) escAccumulated[pi] = 0;
-    rows.forEach(row => {
-      const el = document.getElementById(`esc-${row.key}-${pi}`);
-      escAccumulated[pi] += el && el.value ? parseInt(el.value) || 0 : 0;
-      if (el) el.value = '';
+    var totTr = document.createElement('tr');
+    totTr.className = 'total-row';
+    var tdL = document.createElement('td');
+    tdL.className = 'row-label';
+    tdL.textContent = 'Total';
+    totTr.appendChild(tdL);
+    genPlayers.forEach(function(p, pi) {
+      var td = document.createElement('td');
+      td.id = 'gen-total-' + pi;
+      td.textContent = '0';
+      totTr.appendChild(td);
     });
-    const tot = document.getElementById(`esc-total-${pi}`);
-    if (tot) tot.textContent = escAccumulated[pi];
+    body.appendChild(totTr);
+    document.getElementById('gen-setup').style.display = 'none';
+    document.getElementById('gen-game').style.display = 'flex';
   });
-  showToast('Ronda acumulada ✓');
-}
 
-// ══════════════════════════════════════════════
-//  RESET
-// ══════════════════════════════════════════════
-function resetGame(game) {
-  if (game === 'generala') {
+  function updateGenTotals() {
+    genPlayers.forEach(function(p, pi) {
+      var sum = 0;
+      GEN_ROWS.forEach(function(row) {
+        var el = document.getElementById('gen-' + row.key + '-' + pi);
+        if (el && el.value) sum += parseInt(el.value) || 0;
+      });
+      var tot = document.getElementById('gen-total-' + pi);
+      if (tot) tot.textContent = sum;
+    });
+  }
+
+  document.getElementById('btn-winner-generala').addEventListener('click', function() {
+    if (!genPlayers.length) { showToast('Inicia una partida primero'); return; }
+    var scores = genPlayers.map(function(p, i) {
+      return { name: p, score: parseInt(document.getElementById('gen-total-' + i).textContent) || 0 };
+    });
+    var max = Math.max.apply(null, scores.map(function(s) { return s.score; }));
+    if (max === 0) { showToast('Aun no hay puntajes'); return; }
+    var winners = scores.filter(function(s) { return s.score === max; });
+    showWinner(winners.map(function(w) { return w.name; }).join(' y '), max + ' puntos');
+  });
+
+  document.getElementById('btn-rules-generala').addEventListener('click', function() {
+    document.getElementById('gen-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-generala').addEventListener('click', function() {
+    genPlayers = [];
     document.getElementById('gen-setup').style.display = '';
     document.getElementById('gen-game').style.display = 'none';
-    genPlayers = [];
-  } else if (game === 'truco') {
-    trucoState = { teams: ['Nosotros', 'Ellos'], scores: [0, 0], history: [[], []] };
+  });
+
+  // ─── TRUCO ────────────────────────────────────
+  var truco = { teams: ['Nosotros', 'Ellos'], scores: [0, 0], hist: [[], []] };
+
+  document.getElementById('btn-start-truco').addEventListener('click', function() {
+    truco.teams[0] = document.getElementById('t-team1').value.trim() || 'Nosotros';
+    truco.teams[1] = document.getElementById('t-team2').value.trim() || 'Ellos';
+    truco.scores = [0, 0];
+    truco.hist = [[], []];
+    renderTrucoAll();
+    document.getElementById('truco-setup').style.display = 'none';
+    document.getElementById('truco-game').style.display = 'flex';
+  });
+
+  function bindTrucoBtn(id, team, pts) {
+    document.getElementById(id).addEventListener('click', function() {
+      truco.hist[team].push(truco.scores[team]);
+      var prev = truco.scores[team];
+      truco.scores[team] += pts;
+      renderTrucoAll();
+      if (prev < 15 && truco.scores[team] >= 15) showToast(truco.teams[team] + ' se fue a las buenas!');
+      if (truco.scores[team] >= 30) setTimeout(function() { document.getElementById('btn-winner-truco').click(); }, 300);
+    });
+  }
+  bindTrucoBtn('t1-p1', 0, 1); bindTrucoBtn('t1-p2', 0, 2); bindTrucoBtn('t1-p3', 0, 3);
+  bindTrucoBtn('t2-p1', 1, 1); bindTrucoBtn('t2-p2', 1, 2); bindTrucoBtn('t2-p3', 1, 3);
+
+  document.getElementById('t1-undo').addEventListener('click', function() { undoTruco(0); });
+  document.getElementById('t2-undo').addEventListener('click', function() { undoTruco(1); });
+
+  function undoTruco(t) {
+    if (!truco.hist[t].length) { showToast('Nada para deshacer'); return; }
+    truco.scores[t] = truco.hist[t].pop();
+    renderTrucoAll();
+  }
+
+  function renderTrucoAll() {
+    for (var i = 0; i < 2; i++) {
+      var s = truco.scores[i];
+      var scoreEl = document.getElementById('t-score-' + (i + 1));
+      var nameEl = document.getElementById('t-name-' + (i + 1));
+      scoreEl.textContent = s;
+      scoreEl.style.color = s >= 15 ? 'var(--green)' : 'var(--accent)';
+      nameEl.textContent = truco.teams[i] + ' - ' + (s >= 15 ? 'Las buenas' : 'Las malas');
+      renderPalitoHalf('t-palitos-malas-' + (i + 1), Math.min(s, 15), 'malas-box');
+      renderPalitoHalf('t-palitos-buenas-' + (i + 1), Math.max(s - 15, 0), 'buenas-box');
+    }
+  }
+
+  function renderPalitoHalf(id, score, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    var sets = Math.floor(score / 5);
+    var rem = score % 5;
+    for (var i = 0; i < 3; i++) {
+      var box = document.createElement('div');
+      box.className = 'palito-box ' + cls;
+      box.innerHTML = '<div class="pal pal-l"></div><div class="pal pal-t"></div><div class="pal pal-r"></div><div class="pal pal-b"></div><div class="pal pal-d"></div>';
+      var filled = i < sets ? 5 : (i === sets ? rem : 0);
+      var lines = box.querySelectorAll('.pal');
+      for (var l = 0; l < filled; l++) lines[l].classList.add('on');
+      el.appendChild(box);
+    }
+  }
+
+  document.getElementById('btn-winner-truco').addEventListener('click', function() {
+    var max = Math.max(truco.scores[0], truco.scores[1]);
+    if (max === 0) { showToast('Aun no hay puntajes'); return; }
+    if (truco.scores[0] === truco.scores[1]) {
+      showWinner(truco.teams[0] + ' y ' + truco.teams[1], 'Empate con ' + max + ' puntos');
+    } else {
+      var w = truco.scores[0] > truco.scores[1] ? 0 : 1;
+      showWinner(truco.teams[w], truco.scores[w] + ' pts vs ' + truco.scores[1 - w]);
+    }
+  });
+
+  document.getElementById('btn-rules-truco').addEventListener('click', function() {
+    document.getElementById('truco-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-truco').addEventListener('click', function() {
+    truco = { teams: ['Nosotros', 'Ellos'], scores: [0, 0], hist: [[], []] };
     document.getElementById('truco-setup').style.display = '';
-    document.getElementById('truco-game').style.display 
+    document.getElementById('truco-game').style.display = 'none';
+  });
+
+  // ─── ESCOBA ───────────────────────────────────
+  var ESC_ROWS = [
+    {key:'escobas',label:'Escobas'},
+    {key:'cartas',label:'Cartas'},
+    {key:'oros',label:'Oros'},
+    {key:'sieteoro',label:'7 de Oro'},
+    {key:'setenta',label:'Setenta'}
+  ];
+  var escPlayers = [];
+  var escAcc = {};
+
+  buildSetup('esc', 2, 4, 2);
+
+  document.getElementById('btn-start-escoba').addEventListener('click', function() {
+    escPlayers = getPlayers('esc');
+    escAcc = {};
+    buildEscobaTable();
+    document.getElementById('esc-setup').style.display = 'none';
+    document.getElementById('esc-game').style.display = 'flex';
+  });
+
+  function buildEscobaTable() {
+    var head = document.getElementById('esc-head');
+    head.innerHTML = '<th class="row-label">Categoria</th>';
+    escPlayers.forEach(function(p) {
+      var th = document.createElement('th');
+      th.textContent = p;
+      head.appendChild(th);
+    });
+    var body = document.getElementById('esc-body');
+    body.innerHTML = '';
+    ESC_ROWS.forEach(function(row) {
+      var tr = document.createElement('tr');
+      var td0 = document.createElement('td');
+      td0.className = 'row-label';
+      td0.textContent = row.label;
+      tr.appendChild(td0);
+      escPlayers.forEach(function(p, pi) {
+        var td = document.createElement('td');
+        var inp = makeInput();
+        inp.id = 'esc-' + row.key + '-' + pi;
+        inp.addEventListener('input', updateEscTotals);
+        td.appendChild(inp);
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    // accumulate button
+    var accTr = document.createElement('tr');
+    var accTd = document.createElement('td');
+    accTd.colSpan = escPlayers.length + 1;
+    accTd.style.padding = '8px';
+    var accBtn = document.createElement('button');
+    accBtn.className = 'btn btn-blue';
+    accBtn.style.fontSize = '0.82rem';
+    accBtn.textContent = '+ Nueva Ronda';
+    accBtn.addEventListener('click', function() {
+      escPlayers.forEach(function(p, pi) {
+        if (!escAcc[pi]) escAcc[pi] = 0;
+        ESC_ROWS.forEach(function(row) {
+          var el = document.getElementById('esc-' + row.key + '-' + pi);
+          if (el && el.value) { escAcc[pi] += parseInt(el.value) || 0; el.value = ''; }
+        });
+        var tot = document.getElementById('esc-total-' + pi);
+        if (tot) tot.textContent = escAcc[pi];
+      });
+      showToast('Ronda acumulada!');
+    });
+    accTd.appendChild(accBtn);
+    accTr.appendChild(accTd);
+    body.appendChild(accTr);
+    // totals
+    var totTr = document.createElement('tr');
+    totTr.className = 'total-row';
+    var tdL = document.createElement('td');
+    tdL.className = 'row-label';
+    tdL.textContent = 'Total';
+    totTr.appendChild(tdL);
+    escPlayers.forEach(function(p, pi) {
+      var td = document.createElement('td');
+      td.id = 'esc-total-' + pi;
+      td.textContent = '0';
+      totTr.appendChild(td);
+    });
+    body.appendChild(totTr);
+  }
+
+  function updateEscTotals() {
+    escPlayers.forEach(function(p, pi) {
+      var sum = escAcc[pi] || 0;
+      ESC_ROWS.forEach(function(row) {
+        var el = document.getElementById('esc-' + row.key + '-' + pi);
+        if (el && el.value) sum += parseInt(el.value) || 0;
+      });
+      var tot = document.getElementById('esc-total-' + pi);
+      if (tot) tot.textContent = sum;
+    });
+  }
+
+  document.getElementById('btn-winner-escoba').addEventListener('click', function() {
+    if (!escPlayers.length) { showToast('Inicia una partida primero'); return; }
+    var scores = escPlayers.map(function(p, i) {
+      return { name: p, score: parseInt(document.getElementById('esc-total-' + i).textContent) || 0 };
+    });
+    var max = Math.max.apply(null, scores.map(function(s) { return s.score; }));
+    if (max === 0) { showToast('Aun no hay puntajes'); return; }
+    showWinner(scores.filter(function(s) { return s.score === max; }).map(function(s) { return s.name; }).join(' y '), max + ' puntos');
+  });
+
+  document.getElementById('btn-rules-escoba').addEventListener('click', function() {
+    document.getElementById('esc-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-escoba').addEventListener('click', function() {
+    escPlayers = []; escAcc = {};
+    document.getElementById('esc-setup').style.display = '';
+    document.getElementById('esc-game').style.display = 'none';
+  });
+
+  // ─── LOBA ─────────────────────────────────────
+  var lobPlayers = [];
+  var lobRound = 1;
+
+  buildSetup('lob', 2, 6, 3);
+
+  document.getElementById('btn-start-loba').addEventListener('click', function() {
+    lobPlayers = getPlayers('lob');
+    lobRound = 1;
+    buildLobaTable();
+    document.getElementById('lob-setup').style.display = 'none';
+    document.getElementById('lob-game').style.display = 'flex';
+  });
+
+  function buildLobaTable() {
+    var head = document.getElementById('lob-head');
+    head.innerHTML = '<th class="row-label">Ronda</th>';
+    lobPlayers.forEach(function(p) {
+      var th = document.createElement('th');
+      th.textContent = p;
+      head.appendChild(th);
+    });
+    var body = document.getElementById('lob-body');
+    body.innerHTML = '';
+    var totTr = document.createElement('tr');
+    totTr.className = 'total-row';
+    totTr.id = 'lob-total-row';
+    var tdL = document.createElement('td');
+    tdL.className = 'row-label';
+    tdL.textContent = 'Total';
+    totTr.appendChild(tdL);
+    lobPlayers.forEach(function(p, pi) {
+      var td = document.createElement('td');
+      td.id = 'lob-total-' + pi;
+      td.textContent = '0';
+      totTr.appendChild(td);
+    });
+    body.appendChild(totTr);
+    addLobaRow(1);
+    var addTr = document.createElement('tr');
+    var addTd = document.createElement('td');
+    addTd.colSpan = lobPlayers.length + 1;
+    addTd.style.padding = '8px';
+    addTd.id = 'lob-add-td';
+    var addBtn = document.createElement('button');
+    addBtn.className = 'btn btn-blue';
+    addBtn.style.fontSize = '0.82rem';
+    addBtn.textContent = '+ Agregar Ronda';
+    addBtn.addEventListener('click', function() {
+      lobRound++;
+      addLobaRow(lobRound);
+    });
+    addTd.appendChild(addBtn);
+    addTr.appendChild(addTd);
+    body.appendChild(addTr);
+  }
+
+  function addLobaRow(n) {
+    var totRow = document.getElementById('lob-total-row');
+    var body = document.getElementById('lob-body');
+    var tr = document.createElement('tr');
+    var td0 = document.createElement('td');
+    td0.className = 'row-label';
+    td0.textContent = 'Ronda ' + n;
+    tr.appendChild(td0);
+    lobPlayers.forEach(function(p, pi) {
+      var td = document.createElement('td');
+      var inp = makeInput();
+      inp.id = 'lob-r' + n + '-' + pi;
+      inp.addEventListener('input', updateLobaTotals);
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
+    body.insertBefore(tr, totRow);
+  }
+
+  function updateLobaTotals() {
+    lobPlayers.forEach(function(p, pi) {
+      var sum = 0;
+      for (var r = 1; r <= lobRound; r++) {
+        var el = document.getElementById('lob-r' + r + '-' + pi);
+        if (el && el.value) sum += parseInt(el.value) || 0;
+      }
+      var tot = document.getElementById('lob-total-' + pi);
+      if (tot) tot.textContent = sum;
+    });
+  }
+
+  document.getElementById('btn-winner-loba').addEventListener('click', function() {
+    if (!lobPlayers.length) { showToast('Inicia una partida primero'); return; }
+    var scores = lobPlayers.map(function(p, i) {
+      return { name: p, score: parseInt(document.getElementById('lob-total-' + i).textContent) || 0 };
+    });
+    var min = Math.min.apply(null, scores.map(function(s) { return s.score; }));
+    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' puntos (menos es mejor)');
+  });
+
+  document.getElementById('btn-rules-loba').addEventListener('click', function() {
+    document.getElementById('lob-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-loba').addEventListener('click', function() {
+    lobPlayers = []; lobRound = 1;
+    document.getElementById('lob-setup').style.display = '';
+    document.getElementById('lob-game').style.display = 'none';
+  });
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>

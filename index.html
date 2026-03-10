@@ -2,140 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Javi's Multi-Scorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Javi's Game Suite</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40; --light: #f4f4f9; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { font-family: -apple-system, sans-serif; background: var(--light); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         
-        .screen { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; }
+        /* Navigation */
+        .screen { display: none; width: 100%; max-width: 500px; flex-direction: column; }
         .active { display: flex; }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
-        .menu-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-        .menu-card:active { transform: scale(0.95); border-color: var(--primary); }
-        .emoji { font-size: 3em; display: block; margin-bottom: 10px; }
+        /* Menu */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        .card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; border: 2px solid transparent; }
+        .card:active { transform: scale(0.95); border-color: var(--primary); }
+        .emoji { font-size: 2.5rem; display: block; margin-bottom: 10px; }
 
-        .table-container { width: 100%; overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 15px 0; }
-        table { border-collapse: collapse; width: 100%; min-width: 400px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        input { width: 90%; border: none; text-align: center; font-size: 1.1em; outline: none; background: transparent; }
-        .total-row { background: #e9ecef; font-weight: bold; }
+        /* Tables */
+        .table-w { width: 100%; overflow-x: auto; background: white; border-radius: 10px; margin: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { border-collapse: collapse; width: 100%; min-width: 350px; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+        input { width: 85%; border: none; text-align: center; font-size: 1rem; outline: none; background: transparent; }
+        input[type=number] { -moz-appearance: textfield; }
+        .total-row { background: #f8f9fa; font-weight: bold; }
 
-        .truco-grid { display: flex; justify-content: space-between; width: 100%; }
-        .team-box { width: 48%; text-align: center; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .fosforitos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
-        .matchstick-box { width: 35px; height: 35px; border: 1px dashed #ccc; position: relative; margin: 0 auto; }
-        .stick { position: absolute; background: #2c3e50; opacity: 0; transition: 0.1s; }
-        .stick.active { opacity: 1; }
-        .s-l { left: 0; top: 0; width: 4px; height: 100%; }
-        .s-t { top: 0; left: 0; width: 100%; height: 4px; }
-        .s-r { right: 0; top: 0; width: 4px; height: 100%; }
-        .s-b { bottom: 0; left: 0; width: 100%; height: 4px; }
-        .s-d { top: 50%; left: 50%; width: 130%; height: 4px; transform: translate(-50%, -50%) rotate(-45deg); }
+        /* Truco Specific */
+        .t-grid { display: flex; justify-content: space-between; gap: 10px; }
+        .t-box { background: white; padding: 15px; border-radius: 12px; flex: 1; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .fosforitos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 15px; }
+        .m-box { width: 30px; height: 30px; border: 1px dashed #ddd; position: relative; margin: 0 auto; }
+        .s { position: absolute; background: #333; opacity: 0; transition: opacity 0.1s; }
+        .s.on { opacity: 1; }
+        .s-l { left: 0; top: 0; width: 3px; height: 100%; }
+        .s-t { top: 0; left: 0; width: 100%; height: 3px; }
+        .s-r { right: 0; top: 0; width: 3px; height: 100%; }
+        .s-b { bottom: 0; left: 0; width: 100%; height: 3px; }
+        .s-d { top: 50%; left: 50%; width: 130%; height: 3px; transform: translate(-50%, -50%) rotate(-45deg); }
 
-        .btn { padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; margin: 5px; }
-        .btn-primary { background: var(--primary); }
-        .btn-success { background: var(--success); }
-        .btn-warning { background: var(--warning); color: #212529; }
-        .btn-danger { background: var(--danger); }
-        .btn-info { background: #17a2b8; }
+        /* Buttons */
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; margin: 5px 0; }
+        .b-p { background: var(--primary); width: 100%; }
+        .b-s { background: var(--success); }
+        .b-d { background: var(--danger); width: 100%; }
+        .b-w { background: var(--warning); color: #222; width: 100%; }
+        .b-i { background: #17a2b8; width: 100%; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white; text-align: center; }
-        .instructions { display: none; background: #fff; padding: 15px; border-radius: 10px; margin: 10px; color: #333; text-align: left; border-left: 5px solid var(--primary); width: 90%; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
+        .rules { display: none; padding: 15px; background: #eef2f7; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; border-left: 4px solid var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="screen-home" class="screen active">
+    <div id="h-scr" class="screen active">
         <h1>Game Scorer</h1>
         <div class="menu-grid">
-            <div class="menu-card" onclick="openGame('generala')"><span class="emoji">🎲</span>Generala</div>
-            <div class="menu-card" onclick="openGame('truco')"><span class="emoji">⚔️</span>Truco</div>
-            <div class="menu-card" onclick="openGame('escoba')"><span class="emoji">🧹</span>Escoba 15</div>
-            <div class="menu-card" onclick="openGame('loba')"><span class="emoji">🐺</span>Loba</div>
-        </div>
-    </div>
-
-    <div id="screen-game" class="screen">
-        <h2 id="game-title">Game</h2>
-        <div class="btn-container">
-            <button class="btn btn-info" onclick="toggleInstructions()">ℹ️ Rules</button>
-            <button class="btn btn-warning" onclick="calculateWinner()">🏆 Winner</button>
-        </div>
-        <div id="instructions-box" class="instructions"></div>
-        <div id="game-content" style="width: 100%;"></div>
-        <button class="btn btn-danger" onclick="resetGame()">Reset Game</button>
-        <button class="btn btn-primary" onclick="goHome()">🏠 Menu</button>
-    </div>
-
-    <div id="winnerModal" class="modal" onclick="this.style.display='none'">
-        <div style="font-size: 5em;">🏆</div>
-        <h1 id="winnerTitle">WINNER!</h1>
-        <h2 id="winnerNames" style="font-size: 2.5em;">---</h2>
-        <p id="winnerScore" style="font-size: 1.5em;">0 points</p>
-        <p>Click to close</p>
-    </div>
-
-    <script>
-        let currentGame = '';
-        const configs = {
-            generala: { title: 'Generala', players: 5, rows: ["1","2","3","4","5","6","Straight","Full","Poker","Generala","D. Gen"], info: '1-6: num x count. Straight: 20/25. Full: 30/35. Poker: 40/45. Gen: 50. D.Gen: 100.' },
-            truco: { title: 'Truco', players: 2, isTruco: true, info: 'Points up to 30. Each box = 5 points.' },
-            escoba: { title: 'Escoba 15', players: 4, isDynamic: true, info: 'Points per round: Most Cards, Most Gold, 7 Gold, Setenta, Escobas.' },
-            loba: { title: 'Loba', players: 4, isDynamic: true, lowWins: true, info: 'FEWEST points win. J,Q,K=10. Ace=1. Joker=25/50.' }
-        };
-
-        function openGame(id) {
-            currentGame = id;
-            document.getElementById('screen-home').classList.remove('active');
-            document.getElementById('screen-game').classList.add('active');
-            document.getElementById('game-title').innerText = configs[id].title;
-            document.getElementById('instructions-box').innerText = configs[id].info;
-            document.getElementById('instructions-box').style.display = 'none';
-            renderGame();
-        }
-
-        function renderGame() {
-            const config = configs[currentGame];
-            const container = document.getElementById('game-content');
-            container.innerHTML = '';
-
-            if (config.isTruco) {
-                container.innerHTML = `<div class="truco-grid">${[0,1].map(i => `
-                    <div class="team-box">
-                        <input type="text" id="t-name-${i}" oninput="saveNames()" placeholder="TEAM ${i+1}">
-                        <h1 id="t-val-${i}">0</h1>
-                        <button class="btn btn-success" onclick="updateTruco(${i},1)">+</button>
-                        <button class="btn btn-danger" onclick="updateTruco(${i},-1)">-</button>
-                        <div class="fosforitos" id="matches-${i}"></div>
-                    </div>`).join('')}</div>`;
-            } else {
-                let html = `<div class="table-container"><table><thead><tr><th>Items</th>`;
-                for(let i=0; i<config.players; i++) html += `<th><input type="text" id="p-name-${i}" oninput="saveNames()" placeholder="P${i+1}"></th>`;
-                html += `</tr></thead><tbody id="t-body">`;
-                const rows = config.isDynamic ? ["R1"] : config.rows;
-                rows.forEach((r, idx) => html += createRowHTML(r, config.players));
-                html += `</tbody><tfoot><tr class="total-row"><td>TOTAL</td>${Array(config.players).fill(0).map((_,i)=>`<td id="total-${i}">0</td>`).join('')}</tr></tfoot></table></div>`;
-                if(config.isDynamic) html += `<button class="btn btn-primary" onclick="addRound()">+ Add Round</button>`;
-                container.innerHTML = html;
-            }
-            loadData();
-        }
-
-        function createRowHTML(label, players) {
-            let row = `<tr><td style="font-weight:bold">${label}</td>`;
-            for(let i=0; i<players; i++) row += `<td><input type="number" class="score-in" data-col="${i}" oninput="saveScores()"></td>`;
-            return row + `</tr>`;
-        }
-
-        function addRound() {
-            const body = document.getElementById('t-body');
-            body.insertAdjacentHTML('beforeend', createRowHTML(`R${body.rows.length+1}`, configs[currentGame].players));
-        }
-
-        function updateTruco(t, v) {
-            const el = document.getElementById(`t-val-${t}`);
-            el.innerText = Math.max(0, parseInt(el.innerText) + v);
-            saveScores();
+            <div class="card" onclick="start('generala')"><span class="emoji">🎲</span>Generala</div>
+            <div class="card" onclick="start('truco')"><span class="emoji">⚔️</span>Truco</div>
+            <div class="card

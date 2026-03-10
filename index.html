@@ -7,30 +7,24 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --dark: #343a40; --light: #f4f4f9; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        /* Navigation & Screens */
-        .screen { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; animation: fadeIn 0.3s; }
+        .screen { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Menu */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
         .menu-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-        .menu-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .menu-card:active { transform: scale(0.95); border-color: var(--primary); }
         .emoji { font-size: 3em; display: block; margin-bottom: 10px; }
 
-        /* Tables & Inputs */
         .table-container { width: 100%; overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 15px 0; }
         table { border-collapse: collapse; width: 100%; min-width: 400px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: #eee; font-weight: bold; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
         input { width: 90%; border: none; text-align: center; font-size: 1.1em; outline: none; background: transparent; }
         .total-row { background: #e9ecef; font-weight: bold; }
 
-        /* Truco Visualization */
         .truco-grid { display: flex; justify-content: space-between; width: 100%; }
-        .team-box { width: 48%; text-align: center; background: white; padding: 10px; border-radius: 10px; }
+        .team-box { width: 48%; text-align: center; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .fosforitos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
         .matchstick-box { width: 35px; height: 35px; border: 1px dashed #ccc; position: relative; margin: 0 auto; }
         .stick { position: absolute; background: #2c3e50; opacity: 0; transition: 0.1s; }
@@ -41,27 +35,21 @@
         .s-b { bottom: 0; left: 0; width: 100%; height: 4px; }
         .s-d { top: 50%; left: 50%; width: 130%; height: 4px; transform: translate(-50%, -50%) rotate(-45deg); }
 
-        /* UI Elements */
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; margin: 5px; }
+        .btn { padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; margin: 5px; }
         .btn-primary { background: var(--primary); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); color: #212529; }
         .btn-danger { background: var(--danger); }
         .btn-info { background: #17a2b8; }
         
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white; }
-        .modal-content { text-align: center; animation: zoomIn 0.3s; }
-        @keyframes zoomIn { from { transform: scale(0.5); } to { transform: scale(1); } }
-        
-        .instructions { display: none; background: #fff; padding: 20px; border-radius: 10px; margin: 10px; color: #333; text-align: left; font-size: 0.9em; border-left: 5px solid var(--primary); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white; text-align: center; }
+        .instructions { display: none; background: #fff; padding: 15px; border-radius: 10px; margin: 10px; color: #333; text-align: left; border-left: 5px solid var(--primary); width: 90%; }
     </style>
 </head>
 <body>
 
     <div id="screen-home" class="screen active">
-        <h1 style="margin-bottom: 0;">Game Scorer</h1>
-        <p style="color: #666;">Select a game to start</p>
+        <h1>Game Scorer</h1>
         <div class="menu-grid">
             <div class="menu-card" onclick="openGame('generala')"><span class="emoji">🎲</span>Generala</div>
             <div class="menu-card" onclick="openGame('truco')"><span class="emoji">⚔️</span>Truco</div>
@@ -70,182 +58,84 @@
         </div>
     </div>
 
-    <div id="game-container" class="screen">
+    <div id="screen-game" class="screen">
         <h2 id="game-title">Game</h2>
-        
         <div class="btn-container">
-            <button class="btn btn-info" onclick="toggleInstructions()">ℹ️ Instructions</button>
-            <button class="btn btn-warning" onclick="calculateWinner()">🏆 Calculate Winner</button>
+            <button class="btn btn-info" onclick="toggleInstructions()">ℹ️ Rules</button>
+            <button class="btn btn-warning" onclick="calculateWinner()">🏆 Winner</button>
         </div>
-
         <div id="instructions-box" class="instructions"></div>
-
         <div id="game-content" style="width: 100%;"></div>
-
-        <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 20px;">Reset Data</button>
-        <button class="btn btn-primary" onclick="goHome()">🏠 Back to Menu</button>
+        <button class="btn btn-danger" onclick="resetGame()">Reset Game</button>
+        <button class="btn btn-primary" onclick="goHome()">🏠 Menu</button>
     </div>
 
     <div id="winnerModal" class="modal" onclick="this.style.display='none'">
-        <div class="modal-content">
-            <div style="font-size: 5em;">🏆</div>
-            <h1 id="winnerTitle">WINNER!</h1>
-            <h2 id="winnerNames" style="font-size: 2.5em; margin: 10px 0;">---</h2>
-            <p id="winnerScore" style="font-size: 1.5em; opacity: 0.8;">0 points</p>
-            <p>Tap anywhere to close</p>
-        </div>
+        <div style="font-size: 5em;">🏆</div>
+        <h1 id="winnerTitle">WINNER!</h1>
+        <h2 id="winnerNames" style="font-size: 2.5em;">---</h2>
+        <p id="winnerScore" style="font-size: 1.5em;">0 points</p>
+        <p>Click to close</p>
     </div>
 
     <script>
         let currentGame = '';
-        const storagePrefix = 'javi_scorer_';
-
-        const gameConfigs = {
-            generala: {
-                title: 'Generala',
-                instructions: '<b>Scoring:</b> 1-6 (number x count), Straight (20/25), Full House (30/35), Poker (40/45), Generala (50), Double Generala (100). "Served" (on first roll) adds 5 points.',
-                players: 5,
-                rows: ["1", "2", "3", "4", "5", "6", "Straight", "Full House", "Poker", "Generala", "D. Generala"]
-            },
-            truco: {
-                title: 'Truco',
-                instructions: '<b>Matchsticks:</b> Each box represents 5 points. The first to reach 30 points (or 15 as agreed) wins. Use + and - to update score.',
-                players: 2,
-                isTruco: true
-            },
-            escoba: {
-                title: 'Escoba de 15',
-                instructions: '<b>Scoring:</b> Most cards (1pt), Most Gold/Coins (1pt), 7 of Gold (1pt), Seventy/Setenta (1pt), Escoba (1pt each). Sum round points here.',
-                players: 4,
-                isDynamic: true
-            },
-            loba: {
-                title: 'Loba',
-                instructions: '<b>Rules:</b> Objective is to have the FEWEST points. Figures (K, Q, J) = 10 pts. Ace = 1 pt. Other cards = face value. Joker = 25/50 pts.',
-                players: 4,
-                isDynamic: true,
-                lowScoreWins: true
-            }
+        const configs = {
+            generala: { title: 'Generala', players: 5, rows: ["1","2","3","4","5","6","Straight","Full","Poker","Generala","D. Gen"], info: '1-6: num x count. Straight: 20/25. Full: 30/35. Poker: 40/45. Gen: 50. D.Gen: 100.' },
+            truco: { title: 'Truco', players: 2, isTruco: true, info: 'Points up to 30. Each box = 5 points.' },
+            escoba: { title: 'Escoba 15', players: 4, isDynamic: true, info: 'Points per round: Most Cards, Most Gold, 7 Gold, Setenta, Escobas.' },
+            loba: { title: 'Loba', players: 4, isDynamic: true, lowWins: true, info: 'FEWEST points win. J,Q,K=10. Ace=1. Joker=25/50.' }
         };
 
         function openGame(id) {
             currentGame = id;
-            const config = gameConfigs[id];
             document.getElementById('screen-home').classList.remove('active');
-            document.getElementById('game-container').classList.add('active');
-            document.getElementById('game-title').innerText = config.title;
-            document.getElementById('instructions-box').innerHTML = config.instructions;
+            document.getElementById('screen-game').classList.add('active');
+            document.getElementById('game-title').innerText = configs[id].title;
+            document.getElementById('instructions-box').innerText = configs[id].info;
             document.getElementById('instructions-box').style.display = 'none';
             renderGame();
         }
 
         function renderGame() {
-            const config = gameConfigs[currentGame];
-            const content = document.getElementById('game-content');
-            content.innerHTML = '';
+            const config = configs[currentGame];
+            const container = document.getElementById('game-content');
+            container.innerHTML = '';
 
             if (config.isTruco) {
-                renderTruco(content);
+                container.innerHTML = `<div class="truco-grid">${[0,1].map(i => `
+                    <div class="team-box">
+                        <input type="text" id="t-name-${i}" oninput="saveNames()" placeholder="TEAM ${i+1}">
+                        <h1 id="t-val-${i}">0</h1>
+                        <button class="btn btn-success" onclick="updateTruco(${i},1)">+</button>
+                        <button class="btn btn-danger" onclick="updateTruco(${i},-1)">-</button>
+                        <div class="fosforitos" id="matches-${i}"></div>
+                    </div>`).join('')}</div>`;
             } else {
-                renderTable(content, config);
+                let html = `<div class="table-container"><table><thead><tr><th>Items</th>`;
+                for(let i=0; i<config.players; i++) html += `<th><input type="text" id="p-name-${i}" oninput="saveNames()" placeholder="P${i+1}"></th>`;
+                html += `</tr></thead><tbody id="t-body">`;
+                const rows = config.isDynamic ? ["R1"] : config.rows;
+                rows.forEach((r, idx) => html += createRowHTML(r, config.players));
+                html += `</tbody><tfoot><tr class="total-row"><td>TOTAL</td>${Array(config.players).fill(0).map((_,i)=>`<td id="total-${i}">0</td>`).join('')}</tr></tfoot></table></div>`;
+                if(config.isDynamic) html += `<button class="btn btn-primary" onclick="addRound()">+ Add Round</button>`;
+                container.innerHTML = html;
             }
             loadData();
         }
 
-        function renderTruco(container) {
-            container.innerHTML = `
-                <div class="truco-grid">
-                    ${[0, 1].map(i => `
-                        <div class="team-box">
-                            <input type="text" class="name-input" id="t-name-${i}" placeholder="TEAM ${i+1}">
-                            <h1 id="t-val-${i}" style="font-size: 3em; margin: 5px 0;">0</h1>
-                            <button class="btn btn-success" onclick="updateTruco(${i}, 1)">+</button>
-                            <button class="btn btn-danger" onclick="updateTruco(${i}, -1)">-</button>
-                            <div class="fosforitos" id="matches-${i}"></div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            updateMatchsticks();
+        function createRowHTML(label, players) {
+            let row = `<tr><td style="font-weight:bold">${label}</td>`;
+            for(let i=0; i<players; i++) row += `<td><input type="number" class="score-in" data-col="${i}" oninput="saveScores()"></td>`;
+            return row + `</tr>`;
         }
 
-        function renderTable(container, config) {
-            let html = `<div class="table-container"><table><thead><tr><th>Category</th>`;
-            for (let i = 0; i < config.players; i++) {
-                html += `<th><input type="text" class="name-input" id="p-name-${i}" placeholder="P${i+1}"></th>`;
-            }
-            html += `</tr></thead><tbody id="table-body">`;
-
-            const rows = config.isDynamic ? ["Round 1", "Round 2", "Round 3"] : config.rows;
-            rows.forEach(rowName => {
-                html += `<tr><td style="text-align:left; font-weight:bold;">${rowName}</td>`;
-                for (let i = 0; i < config.players; i++) {
-                    html += `<td><input type="number" class="score-input" data-col="${i}" oninput="saveData()"></td>`;
-                }
-                html += `</tr>`;
-            });
-
-            html += `</tbody><tfoot><tr class="total-row"><td>TOTAL</td>`;
-            for (let i = 0; i < config.players; i++) {
-                html += `<td id="total-${i}">0</td>`;
-            }
-            html += `</tr></tfoot></table></div>`;
-            if (config.isDynamic) html += `<button class="btn btn-primary" onclick="addRow()">+ Add Round</button>`;
-            container.innerHTML = html;
+        function addRound() {
+            const body = document.getElementById('t-body');
+            body.insertAdjacentHTML('beforeend', createRowHTML(`R${body.rows.length+1}`, configs[currentGame].players));
         }
 
-        function addRow() {
-            const body = document.getElementById('table-body');
-            const rowCount = body.rows.length + 1;
-            const players = gameConfigs[currentGame].players;
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td style="text-align:left; font-weight:bold;">Round ${rowCount}</td>` + 
-                Array(players).fill(0).map((_, i) => `<td><input type="number" class="score-input" data-col="${i}" oninput="saveData()"></td>`).join('');
-            body.appendChild(tr);
-        }
-
-        function updateTruco(team, val) {
-            const el = document.getElementById(`t-val-${team}`);
-            let score = Math.max(0, parseInt(el.innerText) + val);
-            el.innerText = score;
-            localStorage.setItem(`${storagePrefix}truco_v_${team}`, score);
-            updateMatchsticks();
-        }
-
-        function updateMatchsticks() {
-            [0, 1].forEach(team => {
-                const score = parseInt(document.getElementById(`t-val-${team}`).innerText);
-                const container = document.getElementById(`matches-${team}`);
-                container.innerHTML = '';
-                for (let i = 0; i < 6; i++) {
-                    const box = document.createElement('div');
-                    box.className = 'matchstick-box';
-                    const pts = Math.min(5, Math.max(0, score - (i * 5)));
-                    box.innerHTML = `
-                        <div class="stick s-l ${pts >= 1 ? 'active' : ''}"></div>
-                        <div class="stick s-t ${pts >= 2 ? 'active' : ''}"></div>
-                        <div class="stick s-r ${pts >= 3 ? 'active' : ''}"></div>
-                        <div class="stick s-b ${pts >= 4 ? 'active' : ''}"></div>
-                        <div class="stick s-d ${pts >= 5 ? 'active' : ''}"></div>
-                    `;
-                    container.appendChild(box);
-                }
-            });
-        }
-
-        function saveData() {
-            const config = gameConfigs[currentGame];
-            const players = config.players;
-            const totals = Array(players).fill(0);
-            
-            // Save Names
-            for(let i=0; i<players; i++) {
-                const name = document.getElementById(`p-name-${i}`).value;
-                localStorage.setItem(`${storagePrefix}${currentGame}_n_${i}`, name);
-            }
-
-            // Save & Calc Scores
-            const inputs = document.querySelectorAll('.score-input');
-            const data = [];
-            inputs.forEach(input => {
-                const val = parseInt(
+        function updateTruco(t, v) {
+            const el = document.getElementById(`t-val-${t}`);
+            el.innerText = Math.max(0, parseInt(el.innerText) + v);
+            saveScores();

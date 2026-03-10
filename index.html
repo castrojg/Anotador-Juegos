@@ -3,6 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Javi's Game Suite – Anotador de Juegos de Mesa</title>
+<meta name="description" content="Anotador gratuito online para Generala, Truco, Escoba de 15 y Loba. Llevá el puntaje de tus juegos de mesa favoritos desde el celular.">
+<meta name="keywords" content="generala, truco, escoba de 15, loba, anotador, puntaje, juegos de mesa, argentina">
+<meta name="author" content="Javi's Game Suite">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Javi's Game Suite – Anotador de Juegos de Mesa">
+<meta property="og:description" content="Anotador gratuito para Generala, Truco, Escoba de 15 y Loba.">
+<meta property="og:type" content="website">
+<!-- Google AdSense: reemplazá YOUR_PUBLISHER_ID con tu ID real cuando lo tengas -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUBLISHER_ID" crossorigin="anonymous"></script> -->
 <title>Javi's Game Suite</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -352,6 +362,90 @@
   .generala-row-bonus td:first-child { color: var(--gold); }
   .generala-row-special td:first-child { color: var(--green); }
 
+  /* ── AD SLOTS ── */
+  .ad-slot {
+    width: 100%;
+    background: var(--surface);
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    width: 100%;
+    max-width: 520px;
+    margin-top: 20px;
+    padding: 16px 0 30px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .footer-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .footer-links a {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .footer-links a:hover { color: var(--text); }
+  .footer-copy { font-size: 0.72rem; color: var(--muted); text-align: center; }
+
+  /* ── COOKIE BANNER ── */
+  .cookie-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 500;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .cookie-banner.hidden { display: none; }
+  .cookie-banner p { flex: 1; line-height: 1.5; }
+  .cookie-banner p a { color: var(--blue); cursor: pointer; }
+  .cookie-accept {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* ── LEGAL SCREENS ── */
+  .legal-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    font-size: 0.83rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .legal-content h2 { color: var(--text); font-size: 1rem; margin: 16px 0 6px; }
+  .legal-content h2:first-child { margin-top: 0; }
+  .legal-content p { margin-bottom: 10px; }
+  .legal-content ul { padding-left: 18px; margin-bottom: 10px; }
+  .legal-content li { margin-bottom: 4px; }
+
   /* ── ESCOBA ── */
   .escoba-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .stat-card {
@@ -394,6 +488,13 @@
       <div class="game-desc">Cartas · hasta 6 jugadores</div>
     </div>
   </div>
+
+  <!-- ESPACIO PUBLICITARIO (activar cuando tengas AdSense aprobado) -->
+  <div class="ad-slot" id="ad-home">
+    <!-- ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins -->
+    📢 Espacio publicitario
+  </div>
+
 </div>
 
 <!-- ════════ GENERALA ════════ -->
@@ -600,7 +701,105 @@
   </div>
 </div>
 
-<!-- ════════ WINNER MODAL ════════ -->
+<!-- ════════ ABOUT SCREEN ════════ -->
+<div id="about" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('home')">←</button>
+    <div class="screen-title">ℹ️ Acerca de</div>
+  </div>
+  <div class="legal-content">
+    <h2>¿Qué es Javi's Game Suite?</h2>
+    <p>Javi's Game Suite es una aplicación web gratuita para anotar los puntos de los juegos de mesa más populares de Argentina: Generala, Truco, Escoba de 15 y Loba.</p>
+    <h2>¿Cómo funciona?</h2>
+    <p>La app funciona completamente en tu navegador, sin necesidad de instalar nada. No requiere registro ni cuenta de usuario. Todos los datos se quedan en tu dispositivo y no se envían a ningún servidor.</p>
+    <h2>¿Es gratis?</h2>
+    <p>Sí, completamente gratuita. Para mantener el sitio en funcionamiento, puede mostrar anuncios de Google AdSense que ayudan a cubrir los costos de hosting.</p>
+    <h2>Contacto</h2>
+    <p>Para sugerencias, reportar errores o consultas podés escribirnos a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fbf7f6ecf9fbecf7d8f2f9eef1fff9f5fdebedf1ecfdb6fbf7f5">[email&#160;protected]</a></strong></p>
+  </div>
+</div>
+
+<!-- ════════ PRIVACY POLICY SCREEN ════════ -->
+<div id="privacy" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('home')">←</button>
+    <div class="screen-title">🔒 Política de Privacidad</div>
+  </div>
+  <div class="legal-content">
+    <h2>Última actualización: enero 2025</h2>
+    <p>En Javi's Game Suite nos comprometemos a proteger tu privacidad. Esta política explica qué datos recopilamos y cómo los usamos.</p>
+
+    <h2>Datos que recopilamos</h2>
+    <p>Esta aplicación <strong>no recopila datos personales</strong> de sus usuarios. No hay registro, login, ni almacenamiento de información en servidores propios.</p>
+
+    <h2>Google AdSense y cookies de terceros</h2>
+    <p>Este sitio puede utilizar Google AdSense para mostrar publicidad. Google puede utilizar cookies para mostrar anuncios basados en tus visitas anteriores a este y otros sitios web. Podés optar por no recibir publicidad personalizada visitando <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--blue)">Configuración de anuncios de Google</a>.</p>
+    <p>Google, como proveedor externo, utiliza cookies para publicar anuncios. El uso de la cookie DART por parte de Google permite publicar anuncios a los visitantes según su visita a este sitio y otros sitios en Internet.</p>
+
+    <h2>Cookies</h2>
+    <p>Usamos una cookie propia únicamente para recordar si ya aceptaste este aviso de cookies. No se usa para rastrear tu actividad.</p>
+
+    <h2>Servicios de terceros</h2>
+    <ul>
+      <li><strong>Google AdSense:</strong> publicidad contextual — <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--blue)">política de Google</a></li>
+      <li><strong>Google Fonts:</strong> fuentes tipográficas cargadas desde servidores de Google</li>
+    </ul>
+
+    <h2>Tus derechos</h2>
+    <p>Podés deshabilitar las cookies desde la configuración de tu navegador en cualquier momento. Ten en cuenta que esto puede afectar el funcionamiento de algunos servicios.</p>
+
+    <h2>Contacto</h2>
+    <p>Para consultas sobre privacidad escribinos a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41222e2f352022352e012b20372826202c2432342835246f222e2c">[email&#160;protected]</a></strong></p>
+  </div>
+</div>
+
+<!-- ════════ TERMS SCREEN ════════ -->
+<div id="terms" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('home')">←</button>
+    <div class="screen-title">📄 Términos de Uso</div>
+  </div>
+  <div class="legal-content">
+    <h2>Última actualización: enero 2025</h2>
+    <p>Al usar Javi's Game Suite aceptás los siguientes términos y condiciones.</p>
+
+    <h2>Uso del servicio</h2>
+    <p>Esta aplicación es de uso personal y recreativo. Queda prohibido su uso para fines comerciales sin autorización expresa del titular.</p>
+
+    <h2>Disponibilidad</h2>
+    <p>Nos reservamos el derecho de modificar, suspender o discontinuar el servicio en cualquier momento sin previo aviso.</p>
+
+    <h2>Publicidad</h2>
+    <p>El sitio puede mostrar anuncios de terceros (Google AdSense). No somos responsables del contenido de dichos anuncios.</p>
+
+    <h2>Limitación de responsabilidad</h2>
+    <p>Javi's Game Suite se provee "tal como está". No garantizamos que el servicio esté libre de errores ni disponible de forma ininterrumpida.</p>
+
+    <h2>Propiedad intelectual</h2>
+    <p>El código, diseño y contenido de esta aplicación es propiedad de sus creadores. Los nombres de los juegos (Generala, Truco, etc.) son de dominio público.</p>
+
+    <h2>Contacto</h2>
+    <p>Consultas: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e4e8e9f3e6e4f3e8c7ede6f1eee0e6eae2f4f2eef3e2a9e4e8ea">[email&#160;protected]</a></strong></p>
+  </div>
+</div>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="site-footer">
+  <div class="footer-links">
+    <a onclick="goTo('about')">Acerca de</a>
+    <a onclick="goTo('privacy')">Política de Privacidad</a>
+    <a onclick="goTo('terms')">Términos de Uso</a>
+  </div>
+  <div class="footer-copy">© 2025 Javi's Game Suite · Hecho con ❤️ en Argentina</div>
+</footer>
+
+<!-- ════════ COOKIE BANNER ════════ -->
+<div class="cookie-banner" id="cookie-banner">
+  <p>Usamos cookies de terceros (Google AdSense) para mostrar publicidad. Al continuar navegando aceptás nuestra <a onclick="goTo('privacy')">Política de Privacidad</a>.</p>
+  <button class="cookie-accept" onclick="acceptCookies()">Aceptar</button>
+</div>
+
+
 <div class="modal" id="winner-modal" onclick="closeModal()">
   <div class="trophy">🏆</div>
   <div class="winner-label">¡Ganador!</div>
@@ -613,7 +812,22 @@
 <!-- ════════ TOAST ════════ -->
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══════════════════════════════════════════════
+//  COOKIES BANNER
+// ══════════════════════════════════════════════
+function acceptCookies() {
+  document.cookie = "cookies_accepted=1; max-age=" + (60*60*24*365) + "; path=/";
+  document.getElementById('cookie-banner').classList.add('hidden');
+}
+
+function checkCookies() {
+  if (document.cookie.includes('cookies_accepted=1')) {
+    document.getElementById('cookie-banner').classList.add('hidden');
+  }
+}
+checkCookies();
+
 // ══════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════
@@ -1164,19 +1378,4 @@ function resetGame(game) {
   } else if (game === 'truco') {
     trucoState = { teams: ['Nosotros', 'Ellos'], scores: [0, 0], history: [[], []] };
     document.getElementById('truco-setup').style.display = '';
-    document.getElementById('truco-game').style.display = 'none';
-  } else if (game === 'escoba') {
-    Object.keys(escAccumulated).forEach(k => delete escAccumulated[k]);
-    escobaPlayers = [];
-    document.getElementById('esc-setup').style.display = '';
-    document.getElementById('esc-game').style.display = 'none';
-  } else if (game === 'loba') {
-    lobaPlayers = [];
-    lobaRound = 1;
-    document.getElementById('lob-setup').style.display = '';
-    document.getElementById('lob-game').style.display = 'none';
-  }
-}
-</script>
-</body>
-</html>
+    document.getElementById('truco-game').style.display 

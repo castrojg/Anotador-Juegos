@@ -358,7 +358,7 @@
     <h2>Es gratis?</h2>
     <p>Si, completamente gratuita. Para mantener el sitio puede mostrar anuncios de Google AdSense.</p>
     <h2>Contacto</h2>
-    <p>Para sugerencias o consultas: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543e35223d312637352720263b393024143339353d387a373b39">[email&#160;protected]</a></strong></p>
+    <p>Para sugerencias o consultas: <strong>javiercastromdp@gmail.com</strong></p>
   </div>
 </div>
 
@@ -376,7 +376,7 @@
     <h2>Google AdSense</h2>
     <p data-i18n="privacy_p3">Este sitio puede usar Google AdSense para publicidad personalizada. Podes optarte por no recibirla en <a href="https://www.google.com/settings/ads" target="_blank">Configuracion de anuncios de Google</a>.</p>
     <h2>Contacto</h2>
-    <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c060d1a05091e0f0d1f181e0301081c2c0b010d0500420f0301">[email&#160;protected]</a></p>
+    <p>javiercastromdp@gmail.com</p>
   </div>
 </div>
 
@@ -396,7 +396,7 @@
     <h2 data-i18n="terms_h4">Limitacion de responsabilidad</h2>
     <p data-i18n="terms_p4">ArgyScore se provee tal como esta, sin garantias de disponibilidad continua.</p>
     <h2>Contacto</h2>
-    <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fef5e2fdf1e6f7f5e7e0e6fbf9f0e4d4f3f9f5fdf8baf7fbf9">[email&#160;protected]</a></p>
+    <p>javiercastromdp@gmail.com</p>
   </div>
 </div>
 
@@ -430,7 +430,7 @@
   <button class="cookie-accept" id="btn-cookie-accept" data-i18n="accept">Aceptar</button>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
 
   // ─── I18N TRANSLATIONS ────────────────────────
@@ -1142,4 +1142,20 @@ document.addEventListener('DOMContentLoaded', function() {
       return { name: p, score: parseInt(document.getElementById('lob-total-' + i).textContent) || 0 };
     });
     var min = Math.min.apply(null, scores.map(function(s) { return s.score; }));
-    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' pun
+    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' puntos (menos es mejor)');
+  });
+
+  document.getElementById('btn-rules-loba').addEventListener('click', function() {
+    document.getElementById('lob-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-loba').addEventListener('click', function() {
+    lobPlayers = []; lobRound = 1;
+    document.getElementById('lob-setup').style.display = '';
+    document.getElementById('lob-game').style.display = 'none';
+  });
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>

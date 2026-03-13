@@ -350,7 +350,7 @@
     <h2>Es gratis?</h2>
     <p>Si, completamente gratuita. Para mantener el sitio puede mostrar anuncios de Google AdSense.</p>
     <h2>Contacto</h2>
-    <p>Para sugerencias o consultas: <strong>javiercastromdp@gmail.com</strong></p>
+    <p>Para sugerencias o consultas: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="345e55425d514657554740465b595044745359555d581a575b59">[email&#160;protected]</a></strong></p>
   </div>
 </div>
 
@@ -368,7 +368,7 @@
     <h2>Google AdSense</h2>
     <p data-i18n="privacy_p3">Este sitio puede usar Google AdSense para publicidad personalizada. Podes optarte por no recibirla en <a href="https://www.google.com/settings/ads" target="_blank">Configuracion de anuncios de Google</a>.</p>
     <h2>Contacto</h2>
-    <p>javiercastromdp@gmail.com</p>
+    <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="432922352a263120223037312c2e273303242e222a2f6d202c2e">[email&#160;protected]</a></p>
   </div>
 </div>
 
@@ -388,7 +388,7 @@
     <h2 data-i18n="terms_h4">Limitacion de responsabilidad</h2>
     <p data-i18n="terms_p4">Javi's Game Suite se provee tal como esta, sin garantias de disponibilidad continua.</p>
     <h2>Contacto</h2>
-    <p>javiercastromdp@gmail.com</p>
+    <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731912051a160110120007011c1e170333141e121a1f5d101c1e">[email&#160;protected]</a></p>
   </div>
 </div>
 
@@ -412,6 +412,7 @@
     <a data-goto="privacy" data-i18n="privacy_title">Politica de Privacidad</a>
     <a data-goto="terms" data-i18n="terms_title">Terminos de Uso</a>
   </div>
+  <a href='https://cafecito.app/argyscores' rel='noopener' target='_blank' style="display:inline-block; background:#6f3be4; color:white; padding:10px 20px; border-radius:20px; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.85rem; text-decoration:none; margin-bottom:8px;">☕ Invitame un café</a>
   <div class="footer-copy">2026 Javi's Game Suite - Argentina</div>
 </footer>
 
@@ -421,7 +422,7 @@
   <button class="cookie-accept" id="btn-cookie-accept" data-i18n="accept">Aceptar</button>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 document.addEventListener('DOMContentLoaded', function() {
 
   // ─── I18N TRANSLATIONS ────────────────────────
@@ -1133,20 +1134,4 @@ document.addEventListener('DOMContentLoaded', function() {
       return { name: p, score: parseInt(document.getElementById('lob-total-' + i).textContent) || 0 };
     });
     var min = Math.min.apply(null, scores.map(function(s) { return s.score; }));
-    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' puntos (menos es mejor)');
-  });
-
-  document.getElementById('btn-rules-loba').addEventListener('click', function() {
-    document.getElementById('lob-rules').classList.toggle('open');
-  });
-
-  document.getElementById('btn-reset-loba').addEventListener('click', function() {
-    lobPlayers = []; lobRound = 1;
-    document.getElementById('lob-setup').style.display = '';
-    document.getElementById('lob-game').style.display = 'none';
-  });
-
-}); // end DOMContentLoaded
-</script>
-</body>
-</html>
+    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' pun

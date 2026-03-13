@@ -1134,4 +1134,20 @@ document.addEventListener('DOMContentLoaded', function() {
       return { name: p, score: parseInt(document.getElementById('lob-total-' + i).textContent) || 0 };
     });
     var min = Math.min.apply(null, scores.map(function(s) { return s.score; }));
-    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' pun
+    showWinner(scores.filter(function(s) { return s.score === min; }).map(function(s) { return s.name; }).join(' y '), min + ' puntos (menos es mejor)');
+  });
+
+  document.getElementById('btn-rules-loba').addEventListener('click', function() {
+    document.getElementById('lob-rules').classList.toggle('open');
+  });
+
+  document.getElementById('btn-reset-loba').addEventListener('click', function() {
+    lobPlayers = []; lobRound = 1;
+    document.getElementById('lob-setup').style.display = '';
+    document.getElementById('lob-game').style.display = 'none';
+  });
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
